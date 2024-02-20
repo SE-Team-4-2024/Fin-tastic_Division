@@ -24,18 +24,27 @@ public class BubbleGenerator : MonoBehaviour
     // Update is called once per frame
     void SpawnBubble()
     {
-        int RandomIndex = UnityEngine.Random.Range(0, 2);
+        int RandomIndex = UnityEngine.Random.Range(0, bubbles.Length);
         GameObject bubble = Instantiate(bubbles[RandomIndex]);
 
-        float startY = UnityEngine.Random.Range(startPos.y - 1f, startPos.y + 1f);
+        // Convert the screen's corner points to world coordinates
+        Vector3 lowerLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
+        Vector3 upperRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
 
-        bubble.transform.position = new Vector3(startPos.x, startY, startPos.z);
+        // Randomly pick a point within the screen
+        float startX = UnityEngine.Random.Range(lowerLeft.x, upperRight.x);
 
-        float scale = UnityEngine.Random.Range(0.8f, 1.2f);
+        // Set startY to the bottom of the screen
+        float startY = lowerLeft.y;
+
+        bubble.transform.position = new Vector3(startX, startY, 0);
+
+        float scale = UnityEngine.Random.Range(0.1f, 0.2f);
         bubble.transform.localScale = new Vector2(scale, scale);
-        float speed = UnityEngine.Random.Range(0.5f, 1.5f);
+        float speed = UnityEngine.Random.Range(0.9f, 1.8f);
         bubble.GetComponent<BubbleScript>().startFloating(speed, endPoint.transform.position.x);
     }
+
 
     void AttemptSpawn()
     {

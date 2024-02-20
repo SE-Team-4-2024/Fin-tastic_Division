@@ -4,22 +4,33 @@ using UnityEngine;
 
 public class BubbleScript : MonoBehaviour
 {
-    private float _speed;
-    private float _endposX;
+    private bool isFloating = false;
+    private float speed;
+    private float endPointX;
 
-    public void startFloating(float speed, float endposX)
+    public void startFloating(float speed, float endPointX)
     {
-        _speed = speed;
-        _endposX = endposX;
+        this.speed = speed;
+        this.endPointX = endPointX;
+        this.isFloating = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.up * (Time.deltaTime * _speed));
-        if(transform.position.x > _endposX);
+        if (isFloating)
         {
-            //Destroy(gameObject);
+            // Move the bubble up
+            transform.position += new Vector3(0, speed * Time.deltaTime, 0);
+
+            // Get the top of the screen
+            float topOfScreen = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0)).y;
+
+            // Check if the bubble has reached the top of the screen
+            if (transform.position.y >= topOfScreen)
+            {
+                // Destroy the bubble
+                Destroy(gameObject);
+            }
         }
     }
 }
