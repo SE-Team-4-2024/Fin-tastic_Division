@@ -4,20 +4,25 @@
 # https://aka.ms/yaml
 
 trigger:
-- '*'
+  branches:
+    include:
+      - main
+      - development
+      - feature/*   # Include all feature branches
+
 steps:
 - checkout: self
 
 - script: |
-    git clone https://008443260-Student@dev.azure.com/008443260-Student/Software_Engineering_Spring_2024_Project/_git/Fin-tastic_Division
+    git clone https://github.com/SE-Team-4-2024/Fin-tastic_Division.git Fin-tastic_Division
     cd Fin-tastic_Division
-    git config user.email "008458886@coyote.csusb.edu"
-    git config user.name "0008458886@coyote.csusb.edu"
-    git remote add github https://github.com/SE-Team-4-2024/Fin-tastic_Division.git
-    git pull origin --all  # Fetch all branches from Azure Repo
+    git config --global user.email "008458886@coyote.csusb.edu"
+    git config --global user.name "0008458886@coyote.csusb.edu"
+    git remote add azure https://008443260-Student@dev.azure.com/008443260-Student/Software_Engineering_Spring_2024_Project/_git/Fin-tastic_Division
+    git fetch azure --prune  # Fetch all branches from Azure Repo and prune old references
     for branch in $(git branch -r | grep -v HEAD); do  # Iterate over all branches
         branch_name=$(echo $branch | sed 's/.*\///')  # Extract branch name
-        git checkout -B $branch_name origin/$branch_name  # Checkout the branch
-        git push github $branch_name  # Push the branch to GitHub
+        git checkout -B $branch_name azure/$branch_name  # Checkout the branch
+        git push origin $branch_name  # Push the branch to GitHub
     done
   displayName: 'Sync Azure Repo to GitHub for all branches'
