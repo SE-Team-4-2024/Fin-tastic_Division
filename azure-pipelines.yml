@@ -12,7 +12,7 @@ steps:
     git clone https://008443260-Student@dev.azure.com/008443260-Student/Software_Engineering_Spring_2024_Project/_git/Fin-tastic_Division
     cd Fin-tastic_Division
     git config user.email "008458886@coyote.csusb.edu"
-    git config user.name "008458886-VAMSI"
+    git config user.name "0008458886@coyote.csusb.edu"
     git remote add github https://github.com/SE-Team-4-2024/Fin-tastic_Division.git
     git pull origin --all  # Fetch all branches from Azure Repo
     for branch in $(git branch -r | grep -v HEAD); do  # Iterate over all branches
