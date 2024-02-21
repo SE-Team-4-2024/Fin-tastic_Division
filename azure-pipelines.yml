@@ -6,9 +6,7 @@
 trigger:
   branches:
     include:
-      - main
-      - development
-      - feature/*   # Include all feature branches
+      - '*'   # Include all feature branches
 
 steps:
 - checkout: self
