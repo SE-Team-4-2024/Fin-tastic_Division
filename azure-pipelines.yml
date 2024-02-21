@@ -14,6 +14,8 @@ steps:
 - checkout: self
 
 - script: |
+    git config --global user.email "008458886@coyote.csusb.edu"
+    git config --global user.name "008458886-VAMSI"
     git clone https://github.com/SE-Team-4-2024/Fin-tastic_Division.git Fin-tastic_Division
     cd Fin-tastic_Division
     git config --global user.email "008458886@coyote.csusb.edu"
@@ -22,7 +24,7 @@ steps:
     git fetch azure --prune  # Fetch all branches from Azure Repo and prune old references
     for branch in $(git branch -r | grep -v HEAD); do  # Iterate over all branches
         branch_name=$(echo $branch | sed 's/.*\///')  # Extract branch name
-        git checkout -B $branch_name $branch_name  # Checkout the branch
+        git checkout -B $branch_name azure/$branch_name  # Checkout the branch
         git push origin $branch_name  # Push the branch to GitHub
     done
   displayName: 'Sync Azure Repo to GitHub for all branches'
