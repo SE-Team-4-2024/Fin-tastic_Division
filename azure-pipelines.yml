@@ -14,9 +14,10 @@ steps:
 - checkout: self
 
 - script: |
+    git config --global credential.helper store
     git config --global user.email "008458886@coyote.csusb.edu"
     git config --global user.name "008458886-VAMSI"
-    git clone https://github.com/SE-Team-4-2024/Fin-tastic_Division.git Fin-tastic_Division
+    git clone https://008458886-VAMSI:$(GitHub-PAT)@github.com/SE-Team-4-2024/Fin-tastic_Division.git Fin-tastic_Division
     cd Fin-tastic_Division
     git config --global user.email "008458886@coyote.csusb.edu"
     git config --global user.name "008458886"
