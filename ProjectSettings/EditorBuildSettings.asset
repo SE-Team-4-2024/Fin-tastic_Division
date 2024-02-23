@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HomeViewController.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/PlayViewController.unity
+    guid: 29d61d8725679454dbab5155e00ebeec
   m_configObjects: {}

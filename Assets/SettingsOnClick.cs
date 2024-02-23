@@ -12,7 +12,5 @@ public class SettingsOnClick : MonoBehaviour
     {
         // Activate the settings panel
         settingsPanel.SetActive(true);
-        Debug.Log("Button Clicked!");
-        // Example: Change the text of the button when clicked
     }
 }
