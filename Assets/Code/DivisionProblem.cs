@@ -3,16 +3,18 @@ using System.Collections.Generic;
 [System.Serializable]
 public class DivisionProblem
 {
-    public string question;
+    public int numerator;
+    public int denominator;
     public List<int> options;
     public int correct_option_index;
 
     // Default constructor required for deserialization
     public DivisionProblem() { }
 
-    public DivisionProblem(string question, List<int> options, int correctIndex)
+    public DivisionProblem(int numerator, int denominator, List<int> options, int correctIndex)
     {
-        this.question = question;
+        this.numerator = numerator;
+        this.denominator = denominator;
         this.options = options;
         this.correct_option_index = correctIndex;
     }

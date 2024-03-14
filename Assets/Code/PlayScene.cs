@@ -12,6 +12,8 @@ public class PlayScene : MonoBehaviour
     public GameObject pauseMenuPanel, completeGamePanel;
     public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
 
+    public RectTransform horizontalBar; // Reference to the horizontal bar panel
+    public GameObject fishPrefab; 
     private int correctAnswerIndex;
     private int currentQuestionIndex = 0;
     private const int totalQuestions = 5;
@@ -47,7 +49,9 @@ public class PlayScene : MonoBehaviour
         // Reset colors of option buttons
         ResetButtonColors();
         stageText.text = $"Stage: {currentQuestionIndex + 1}/{totalQuestions}";
-        questionsText.text = problem.question;
+        questionsText.text = $"{problem.numerator} / {problem.denominator} ?";
+         // Instantiate fishes for the numerator
+        GenerateFishes(problem.numerator);
 
         // Ensure that the correct index is within the range of options
         correctAnswerIndex = Mathf.Clamp(problem.correct_option_index, 0, problem.options.Count - 1);
@@ -70,6 +74,24 @@ public class PlayScene : MonoBehaviour
 
             answerButtons[i].onClick.RemoveAllListeners();
             answerButtons[i].onClick.AddListener(() => AnswerSelected(optionIndex));
+        }
+    }
+
+    void GenerateFishes(int numerator)
+    {
+        // Calculate spacing between each fish image
+        float barWidth = horizontalBar.rect.width;
+        float spacing = barWidth / numerator;
+
+        // Instantiate fish images
+        for (int i = 0; i < numerator; i++)
+        {
+            // Instantiate fish image
+            GameObject fish = Instantiate(fishPrefab, horizontalBar);
+
+            // Calculate position of the fish image within the horizontal bar
+            float xPos = -barWidth / 2f + spacing * (i + 0.5f);
+            fish.transform.localPosition = new Vector3(xPos, 0f, 0f);
         }
     }
 

@@ -4,7 +4,7 @@ using System.Collections;
 
 public static class DivisionProblemLoader
 {
-    public static string azureFunctionUrl = "https://funtiondivision.azurewebsites.net/api/http_trigger?code=Gz0NyagnzlXr_fjWsHY6XzxsypaakixaDpLMqthg-8qjAzFuFl2arg==";
+    public static string azureFunctionUrl = "https://fin-tastic-division.azurewebsites.net/api/http_trigger?code=zqE67mTifinr908Yjvn6ma5JHMBbvicAkchRxAVjxQhZAzFuETmsUw==";
 
     public static IEnumerator LoadDivisionProblem(System.Action<DivisionProblem> onSuccess, System.Action<string> onError)
     {
