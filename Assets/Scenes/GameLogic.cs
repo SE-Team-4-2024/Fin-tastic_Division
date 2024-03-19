@@ -46,7 +46,7 @@ public class GameLogic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     void GenerateQuestion()
@@ -76,7 +76,7 @@ public class GameLogic : MonoBehaviour
             int b = 1;
             int answer = 1;
             int flag = 0;
-            bool used = false;
+            int used = 0;
             while (flag == 0)
             {
                 a = Random.Range(1, 10);
@@ -85,11 +85,10 @@ public class GameLogic : MonoBehaviour
                 {
                     if (question[0] == a && question[1] == b)
                     {
-                        used = true;
-                        break; // Exit the loop if a repeat question is found
+                        used++;
                     }
                 }
-                if (a % b == 0 && a != b && a/b!=1 && !used)
+                if (a % b == 0 && a != b && used<3)
                 {
                     answer = a / b;
                     flag = 1;
