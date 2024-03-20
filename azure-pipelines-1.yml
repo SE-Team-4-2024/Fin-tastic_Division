@@ -1,0 +1,61 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- Artifacts
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - job: BuildAndTest
+    displayName: Build and Test
+    steps:
+      - task: DotNetCoreCLI@2
+        displayName: dotnet restore
+        inputs:
+          command: 'restore'
+          projects: '**/*.csproj'
+          feedsToUse: 'select'
+          vstsFeed: 'b6ecb66f-cdc6-4ab9-817f-4976d42420a4/1d874354-4aed-4261-9e82-6ac99023e093'
+
+      - task: DotNetCoreCLI@2
+        displayName: dotnet build
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: dotnet test
+        inputs:
+          command: 'test'
+          projects: '**/*.test.csproj'
+
+  - job: createNugetPakage
+    displayName: Create Nuget Package
+    dependsOn: BuildAndTest
+    condition: succeeded()
+    steps:
+      - task: DotNetCoreCLI@2
+        displayName: dotnet pack
+        inputs:
+          command: 'pack'
+          packagesToPack: '**/JsonTransformation.csproj'
+          versioningScheme: 'byBuildNumber'
+
+      - task: DotNetCoreCLI@2
+        displayName: dotnet push
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+          nuGetFeedType: 'internal'
+          publishVstsFeed: 'b6ecb66f-cdc6-4ab9-817f-4976d42420a4/1d874354-4aed-4261-9e82-6ac99023e093'
+
+      - task: PublishBuildArtifacts@1
+        displayName: publish artifacts
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)'
+          targetPath: '\\Jsontransformation\$(Build.definitionName)\$(Build.buildNumber)'
+          publishLocation: 'Container'
