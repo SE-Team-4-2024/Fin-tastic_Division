@@ -4,58 +4,30 @@
 # https://aka.ms/yaml
 
 trigger:
-- Artifacts
+  branches:
+    include:
+      - '*'  # Trigger on all pushes
+  #paths:
+   # include:
+    #  - '**'  # Trigger on changes to any file
 
-pool:
-  vmImage: ubuntu-latest
 
-jobs:
-  - job: BuildAndTest
-    displayName: Build and Test
-    steps:
-      - task: DotNetCoreCLI@2
-        displayName: dotnet restore
-        inputs:
-          command: 'restore'
-          projects: '**/*.cs'
-          feedsToUse: 'select'
-          vstsFeed: 'b6ecb66f-cdc6-4ab9-817f-4976d42420a4/1d874354-4aed-4261-9e82-6ac99023e093'
+steps:
+  - checkout: self
 
-      - task: DotNetCoreCLI@2
-        displayName: dotnet build
-        inputs:
-          command: 'build'
-          projects: '**/*.cs'
-
-      - task: DotNetCoreCLI@2
-        displayName: dotnet test
-        inputs:
-          command: 'test'
-          projects: '**/*.test.cs'
-
-  - job: createNugetPakage
-    displayName: Create Nuget Package
-    dependsOn: BuildAndTest
-    condition: succeeded()
-    steps:
-      - task: DotNetCoreCLI@2
-        displayName: dotnet pack
-        inputs:
-          command: 'pack'
-          packagesToPack: '**/JsonTransformation.cs'
-          versioningScheme: 'byBuildNumber'
-
-      - task: DotNetCoreCLI@2
-        displayName: dotnet push
-        inputs:
-          command: 'push'
-          packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-          nuGetFeedType: 'internal'
-          publishVstsFeed: 'b6ecb66f-cdc6-4ab9-817f-4976d42420a4/1d874354-4aed-4261-9e82-6ac99023e093'
-
-      - task: PublishBuildArtifacts@1
-        displayName: publish artifacts
-        inputs:
-          pathToPublish: '$(Build.ArtifactStagingDirectory)'
-          targetPath: '\\Jsontransformation\$(Build.definitionName)\$(Build.buildNumber)'
-          publishLocation: 'Container'
+  - script: |
+      git config --global credential.helper store
+      git config --global user.email "008458886@coyote.csusb.edu"
+      git config --global user.name "008458886-VAMSI"
+      git clone https://008458886-VAMSI:$(GitHub-PAT)@github.com/SE-Team-4-2024/Fin-tastic_Division.git Fin-tastic_Division
+      cd Fin-tastic_Division
+      git config --global user.email "008458886@coyote.csusb.edu"
+      git config --global user.name "008458886"
+      git remote add azure https://$(Azure-PAT)@dev.azure.com/008443260-Student/Software_Engineering_Spring_2024_Project/_git/Fin-tastic_Division
+      git fetch azure --prune  # Fetch all branches from Azure Repo and prune old references
+      for branch in $(git branch -r | grep -v HEAD); do  # Iterate over all branches
+          branch_name=$(echo $branch | sed 's/.*\///')  # Extract branch name
+          git checkout -B $branch_name azure/$branch_name  # Checkout the branch
+          git push origin $branch_name  # Push the branch to GitHub
+      done
+    displayName: 'Sync Azure Repo to GitHub for all branches'
