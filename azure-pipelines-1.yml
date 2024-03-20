@@ -17,7 +17,7 @@ jobs:
         displayName: dotnet restore
         inputs:
           command: 'restore'
-          projects: '**/*.csproj'
+          projects: '**/*.cs'
           feedsToUse: 'select'
           vstsFeed: 'b6ecb66f-cdc6-4ab9-817f-4976d42420a4/1d874354-4aed-4261-9e82-6ac99023e093'
 
@@ -25,13 +25,13 @@ jobs:
         displayName: dotnet build
         inputs:
           command: 'build'
-          projects: '**/*.csproj'
+          projects: '**/*.cs'
 
       - task: DotNetCoreCLI@2
         displayName: dotnet test
         inputs:
           command: 'test'
-          projects: '**/*.test.csproj'
+          projects: '**/*.test.cs'
 
   - job: createNugetPakage
     displayName: Create Nuget Package
@@ -42,7 +42,7 @@ jobs:
         displayName: dotnet pack
         inputs:
           command: 'pack'
-          packagesToPack: '**/JsonTransformation.csproj'
+          packagesToPack: '**/JsonTransformation.cs'
           versioningScheme: 'byBuildNumber'
 
       - task: DotNetCoreCLI@2
