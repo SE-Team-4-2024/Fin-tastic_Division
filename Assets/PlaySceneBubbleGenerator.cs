@@ -38,7 +38,7 @@ public class PlaySceneBubbleGenerator : MonoBehaviour
         bubble.transform.localScale = new Vector2(scale, scale);
         float speed = Random.Range(0.9f, 1.8f);
         bubble.GetComponent<PlaySceneBubbleScript>().StartFloating(speed, endPoint.transform.position.x);
-        Debug.Log("Bubble spawned at position: " + bubble.transform.position);
+        //Debug.Log("Bubble spawned at position: " + bubble.transform.position);
     }
 
     void AttemptSpawn()
