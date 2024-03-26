@@ -87,7 +87,7 @@ public class PlayScene : MonoBehaviour
         
     }
 
-    void GenerateFishes(int numerator, System.Action onComplete)
+   void GenerateFishes(int numerator, System.Action onComplete)
 {
     Debug.Log("Generating fishes. Numerator: " + numerator);
 
@@ -107,18 +107,27 @@ public class PlayScene : MonoBehaviour
     // Keep track of the number of fishes instantiated
     int fishesInstantiated = 0;
 
+    // Define the animation duration for each fish
+    float animationDuration = 0.5f; // Adjust as needed
+
+    // Define the delay before moving fishes to denominator bar panels
+    float delayBeforeMoving = 1.0f; // 1 second delay
+
     // Instantiate and animate fish images
     for (int i = 0; i < numerator; i++)
     {
         // Instantiate fish image from the prefab
         GameObject fish = Instantiate(fishPrefab, numeratorBarPanel);
 
-        // Calculate position of the fish image within the panel
+        // Calculate position of the fish image outside the panel
+        float startXPos = -panelWidth / 2f - spacing; // Start from outside the panel
         float targetXPos = -panelWidth / 2f + spacing * (i + 0.5f); // Move the fish to the left edge of the panel
-        fish.transform.localPosition = new Vector3(targetXPos, 0f, 0f);
+
+        // Set initial position of the fish outside the panel
+        fish.transform.localPosition = new Vector3(startXPos, 0f, 0f);
 
         // Animate the fish to move into its position within the panel
-        StartCoroutine(AnimateFish(fish, fish.transform.localPosition, () =>
+        StartCoroutine(AnimateFish(fish, new Vector3(targetXPos, 0f, 0f), animationDuration, () =>
         {
             // Increment the count of instantiated fishes
             fishesInstantiated++;
@@ -127,22 +136,21 @@ public class PlayScene : MonoBehaviour
             if (fishesInstantiated == numerator)
             {
                 // Invoke the onComplete callback when all fishes are instantiated and animated
-                onComplete?.Invoke();
+                StartCoroutine(DelayBeforeMovingToDenominator(delayBeforeMoving, onComplete));
             }
         }));
     }
 }
 
-IEnumerator AnimateFish(GameObject fish, Vector3 targetPosition, System.Action onComplete)
+IEnumerator AnimateFish(GameObject fish, Vector3 targetPosition, float duration, System.Action onComplete)
 {
-    float animationDuration = 1.0f; // Duration of the animation in seconds
     float elapsedTime = 0f;
     Vector3 startingPosition = fish.transform.localPosition;
 
-    while (elapsedTime < animationDuration)
+    while (elapsedTime < duration)
     {
         // Calculate the interpolation factor (0 to 1)
-        float t = elapsedTime / animationDuration;
+        float t = elapsedTime / duration;
 
         // Interpolate the position between starting and target positions
         fish.transform.localPosition = Vector3.Lerp(startingPosition, targetPosition, t);
@@ -158,6 +166,15 @@ IEnumerator AnimateFish(GameObject fish, Vector3 targetPosition, System.Action o
     fish.transform.localPosition = targetPosition;
 
     // Invoke the onComplete callback when the animation is completed
+    onComplete?.Invoke();
+}
+
+IEnumerator DelayBeforeMovingToDenominator(float delay, System.Action onComplete)
+{
+    // Wait for the specified delay before moving fishes to denominator bar panels
+    yield return new WaitForSeconds(delay);
+
+    // Once the delay is over, invoke the onComplete callback
     onComplete?.Invoke();
 }
 
@@ -230,45 +247,56 @@ void GenerateDenominatorBarPanels(int denominator)
 
 void AnimateFishesToDenominator(int correctIndex, int denominator)
 {
-    // Calculate the number of fishes per denominator bar
-    int fishesPerBar = Mathf.CeilToInt((float)numeratorBarPanel.transform.childCount / denominator);
+    // Get the total number of fishes
+    int totalFishes = numeratorBarPanel.transform.childCount;
 
-    // Loop through each denominator bar panel
-    for (int i = 0; i < denominator; i++)
+    // Calculate the horizontal spacing between fishes
+    float spacing = numeratorBarPanel.rect.width / denominator;
+
+    // Initialize the current panel index
+    int currentPanelIndex = 0;
+
+    // Loop through each fish
+    StartCoroutine(AnimateFishesSequentially(totalFishes, denominator, spacing, currentPanelIndex));
+}
+
+IEnumerator AnimateFishesSequentially(int totalFishes, int denominator, float spacing, int currentPanelIndex)
+{
+    // Check total number of fishes
+    Debug.Log("Total fishes: " + totalFishes);
+
+    // Loop through each fish
+    for (int i = 0; i < totalFishes; i++)
     {
-        // Get the target panel index for the current denominator bar
-        int targetPanelIndex = i;
+        // Get the fish transform
+        Transform fishTransform = numeratorBarPanel.transform.GetChild(i);
 
-        // Calculate the starting Y position for the fishes in the denominator bar panel
-        float startYPosition = denominatorBarPanels[targetPanelIndex].position.y;
-
-        // Calculate the horizontal spacing between fishes
-        float spacing = numeratorBarPanel.rect.width / fishesPerBar;
-
-        // Loop through each fish and animate it to the target panel
-        for (int j = 0; j < fishesPerBar; j++)
+        // Check if fishTransform exists
+        if (fishTransform == null)
         {
-            // Calculate the fish index in the numerator bar panel
-            int fishIndex = (i * fishesPerBar) + j;
-
-            // Ensure the fish index is within bounds
-            if (fishIndex < numeratorBarPanel.transform.childCount)
-            {
-                // Get the fish transform
-                Transform fishTransform = numeratorBarPanel.transform.GetChild(fishIndex);
-
-                // Calculate the target position for the fish in the current denominator bar panel
-                float targetXPos = denominatorBarPanels[targetPanelIndex].position.x - (spacing * (fishesPerBar - 1) / 2f) + (j * spacing);
-                Vector3 targetPosition = new Vector3(targetXPos, startYPosition, 0f);
-
-                // Animate the fish to move to the target position within the denominator bar panel
-                StartCoroutine(AnimateFishToDenominator(fishTransform.gameObject, denominatorBarPanels[targetPanelIndex], targetPosition, null));
-            }
+            Debug.LogError("Fish transform is null at index: " + i);
+            yield break; // Exit the coroutine if the fish transform is null
         }
+
+        // Calculate the target position for the fish in the current denominator bar panel
+        float targetXPos = Mathf.Clamp(denominatorBarPanels[currentPanelIndex].localPosition.x + (i % denominator) * spacing, 0, 720);
+        float targetYPos = Mathf.Clamp(denominatorBarPanels[currentPanelIndex].localPosition.y, 0, 1560); 
+        Vector3 targetPosition = new Vector3(targetXPos, targetYPos, 0f);
+
+        // Animate the fish to the target position within the denominator bar panel
+        yield return StartCoroutine(AnimateFishToDenominator(fishTransform.gameObject, denominatorBarPanels[currentPanelIndex], targetPosition));
+
+        // Move to the next panel for the next fish
+        currentPanelIndex = (currentPanelIndex + 1) % denominator;
+
+        // Add a short delay before animating the next fish
+        yield return new WaitForSeconds(0.1f); // Adjust delay as needed
     }
 }
 
-IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel, Vector3 targetPosition, System.Action onComplete)
+
+
+IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel, Vector3 targetPosition)
 {
     float animationDuration = 1.0f; // Duration of the animation in seconds
     float elapsedTime = 0f;
@@ -286,7 +314,16 @@ IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel,
         float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
         // Interpolate the position between starting and target positions using smooth step
-        fish.transform.localPosition = Vector3.Lerp(startingPosition, targetPosition, smoothT);
+        Vector3 newPosition = Vector3.Lerp(startingPosition, targetPosition, smoothT);
+
+        // Ensure the fish stays within the bounds of the target panel
+        float panelWidth = targetPanel.rect.width;
+        float halfPanelWidth = panelWidth / 2f;
+        float minX = targetPanel.localPosition.x - halfPanelWidth;
+        float maxX = targetPanel.localPosition.x + halfPanelWidth;
+        newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+
+        fish.transform.localPosition = newPosition;
 
         // Increment elapsed time
         elapsedTime += Time.deltaTime;
@@ -298,10 +335,8 @@ IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel,
     // Ensure the fish reaches the target position exactly
     fish.transform.SetParent(targetPanel); // Set the fish's parent to the target panel
     fish.transform.localPosition = targetPosition;
-
-    // Invoke the onComplete callback when the animation is completed
-    onComplete?.Invoke();
 }
+
 
 
 
