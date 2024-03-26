@@ -23,7 +23,7 @@ public class BGBehavior : MonoBehaviour
         transform.position = startPosition + Vector3.left * newPosition;
 
         // Check if the sprite has moved beyond its width and reset its position
-        if (newPosition >= spriteWidth)
+        if (newPosition >= spriteWidth/1.5)
         {
             transform.position = startPosition;
         }

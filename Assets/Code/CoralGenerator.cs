@@ -37,7 +37,7 @@ public class CoralGenerator : MonoBehaviour
 
         coral.transform.position = new Vector3(startX, startY, 0);
 
-        float scale = UnityEngine.Random.Range(0.1f, 0.5f);
+        float scale = UnityEngine.Random.Range(0.4f, 0.7f);
         coral.transform.localScale = new Vector2(scale, scale);
         float speed = 0.9f;
         coral.GetComponent<CoralScript>().StartFloating(speed, endPoint.transform.position.x);
