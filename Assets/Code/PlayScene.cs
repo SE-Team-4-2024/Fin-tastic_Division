@@ -32,7 +32,22 @@ public class PlayScene : MonoBehaviour
         playAgainButton.onClick.AddListener(PlayAgainButton);
         pauseExitToMainMenuButton.onClick.AddListener(BackToMainMenu);
 
+        CreateNewGame(); // To create a new game to store in database
         LoadNextProblem(); // Start loading the first problem
+    }
+
+    void CreateNewGame()
+    {
+        string userID = "johnWick_12"; // To change in later phase, once profile page is built up.
+        Debug.Log("Creating New Game for the userID" + userID);
+
+        // Call the asynchronous method and pass onSuccess and onError callbacks
+        StartCoroutine(GameManager.CreateNewGame(userID, onSuccess, OnError));
+    }
+
+    void onSuccess(string gameID){
+        Debug.Log("Game Succesfully created with gameId"+ gameID);
+        PlayerPrefs.SetString("gameID", gameID);
     }
 
     void LoadNextProblem()
@@ -357,10 +372,22 @@ void AnswerSelected(int index)
     answerButtons[index].GetComponent<Image>().color = isCorrect ? Color.green : Color.red;
     correctlyAnswered += isCorrect ? 1 : 0;
 
+    // To update the user response in database
+    StartCoroutine(UpdateUserResponseCoroutine(isCorrect)); 
     StartCoroutine(ContinueAfterFeedback(isCorrect, index));
 }
 
-IEnumerator ContinueAfterFeedback(bool isCorrect, int index)
+    IEnumerator UpdateUserResponseCoroutine(bool isCorrect)
+    {
+        string gameID = PlayerPrefs.GetString("gameID");                                        
+        yield return GameManager.UpdateUserResponse(gameID, isCorrect, onSuccessfulUpdate, OnError);
+    }
+
+    void onSuccessfulUpdate(bool success){
+        Debug.Log("User response updation"+ success);
+    }
+
+    IEnumerator ContinueAfterFeedback(bool isCorrect, int index)
 {
     yield return new WaitForSeconds(1);
 
@@ -381,10 +408,23 @@ void CompleteGame()
     double accuracy = ((double)correctlyAnswered / totalQuestions) * 100;
     accuracyText.text = "Accuracy:" + $"{accuracy}%";
     wrongText.text = "Wrong:" + (totalQuestions - correctlyAnswered);
+    StartCoroutine(UpdateGameCompletionStats(accuracy, 90)); // to update the accuracy and completion rate, once completion rate is done, need to remove hardcoded once..
     DisableGameInputs();
 }
 
-void PauseGame()
+    IEnumerator UpdateGameCompletionStats(double accuracy, double completionRate)
+    {
+        string gameID = PlayerPrefs.GetString("gameID");
+        // Define the success and error callbacks
+        System.Action<bool> onSuccess = (bool success) =>
+        {
+            // Handle onSuccess callback if needed
+            Debug.Log("Updated in database as game completed");
+        };
+        yield return GameManager.UpdateGameCompletedStats(gameID, accuracy, completionRate, onSuccess, OnError);
+    }
+
+    void PauseGame()
 {
     pauseMenuPanel.SetActive(true);
     DisableGameInputs();
