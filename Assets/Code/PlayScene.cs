@@ -9,7 +9,7 @@ public class PlayScene : MonoBehaviour
 {
     public TextMeshProUGUI questionsText, stageText, accuracyText, wrongText;
     public Button[] answerButtons;
-    public GameObject pauseMenuPanel, completeGamePanel;
+    public GameObject pauseMenuPanel, completeGamePanel;   // backgroundOverlayPanel;
     public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
     public GameObject fishPrefab; 
     public GameObject denominatorBarPanelPrefab; // Prefab for denominator bar panel
@@ -49,7 +49,7 @@ public class PlayScene : MonoBehaviour
     {
         // Reset colors of option buttons
         ResetButtonColors();
-        stageText.text = $"Stage: {currentQuestionIndex + 1}/{totalQuestions}";
+        stageText.text = $" {currentQuestionIndex + 1}/{totalQuestions}";
         questionsText.text = $"{problem.numerator} / {problem.denominator} ?";
         // Instantiate fishes for the numerator
         GenerateFishes(problem.numerator, () =>
@@ -432,6 +432,7 @@ void PlayAgainButton()
     currentQuestionIndex = 0;
     correctlyAnswered = 0;
     completeGamePanel.SetActive(false);
+    pauseButton.interactable = true;
     EnableGameInputs();
     LoadNextProblem();
 }
