@@ -7,6 +7,7 @@ public class BGBehavior : MonoBehaviour
     public float scrollSpeed;
     private float spriteWidth;
     private Vector3 startPosition;
+    private float movedDistance;
 
     void Start()
     {
@@ -14,18 +15,22 @@ public class BGBehavior : MonoBehaviour
         startPosition = transform.position;
         // Automatically calculate the width of the sprite.
         spriteWidth = GetComponent<SpriteRenderer>().bounds.size.x;
+        movedDistance = 0f;
     }
 
     void Update()
     {
         // Move the background
-        float newPosition = Mathf.Repeat(Time.time * scrollSpeed, spriteWidth);
-        transform.position = startPosition + Vector3.left * newPosition;
+        movedDistance += Time.deltaTime * scrollSpeed;
+        movedDistance = Mathf.Repeat(movedDistance, spriteWidth);
+
+        transform.position = startPosition + Vector3.left * movedDistance;
 
         // Check if the sprite has moved beyond its width and reset its position
-        if (newPosition >= spriteWidth/1.5)
+        if (movedDistance >= spriteWidth/1.5)
         {
             transform.position = startPosition;
+            movedDistance = 0f;
         }
     }
 }

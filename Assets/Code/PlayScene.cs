@@ -146,7 +146,7 @@ public class PlayScene : MonoBehaviour
     {
         foreach (var button in answerButtons)
         {
-            button.GetComponent<Image>().color = new Color32(72, 205, 255, 255); // Set the color back to default
+            button.GetComponent<Image>().color = new Color32(0, 0, 0, 0); // Set the color back to default
         }
     }
 
