@@ -11,7 +11,7 @@ public class PlayScene : MonoBehaviour
     public Button[] answerButtons;
     public GameObject pauseMenuPanel, completeGamePanel;   // backgroundOverlayPanel;
     public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
-    public GameObject fishPrefab; 
+    public GameObject fishPrefab;
     public GameObject denominatorBarPanelPrefab; // Prefab for denominator bar panel
     private int correctAnswerIndex;
     private int currentQuestionIndex = 0;
@@ -31,6 +31,7 @@ public class PlayScene : MonoBehaviour
         backToMainMenuButton.onClick.AddListener(BackToMainMenu);
         playAgainButton.onClick.AddListener(PlayAgainButton);
         pauseExitToMainMenuButton.onClick.AddListener(BackToMainMenu);
+        
 
         LoadNextProblem(); // Start loading the first problem
     }
@@ -87,7 +88,7 @@ public class PlayScene : MonoBehaviour
         
     }
 
-   void GenerateFishes(int numerator, System.Action onComplete)
+void GenerateFishes(int numerator, System.Action onComplete)
 {
     Debug.Log("Generating fishes. Numerator: " + numerator);
 
@@ -99,13 +100,19 @@ public class PlayScene : MonoBehaviour
 
     // Calculate spacing between each fish image
     float panelWidth = numeratorBarPanel.rect.width;
-    float spacing = panelWidth / numerator;
+    float fishWidth = fishPrefab.GetComponent<RectTransform>().rect.width;
+    float totalFishWidth = numerator * fishWidth;
+    float spacing = (panelWidth - totalFishWidth) / (numerator + 1); // Divide remaining space evenly
 
     Debug.Log("Panel width: " + panelWidth);
+    Debug.Log("Total fish width: " + totalFishWidth);
     Debug.Log("Spacing between fishes: " + spacing);
 
     // Keep track of the number of fishes instantiated
     int fishesInstantiated = 0;
+
+    // Get the height of the fish prefab
+    float fishHeight = fishPrefab.GetComponent<RectTransform>().rect.height;
 
     // Define the animation duration for each fish
     float animationDuration = 0.5f; // Adjust as needed
@@ -113,21 +120,31 @@ public class PlayScene : MonoBehaviour
     // Define the delay before moving fishes to denominator bar panels
     float delayBeforeMoving = 1.0f; // 1 second delay
 
+    // Define the scale factor to increase the size of the fish
+    float scaleFactor = 1.5f; // Adjust as needed
+
+    // Calculate the starting position to center the fishes horizontally
+    float startXPos = -panelWidth / 2f + spacing + fishWidth / 2f;
+
     // Instantiate and animate fish images
     for (int i = 0; i < numerator; i++)
     {
         // Instantiate fish image from the prefab
         GameObject fish = Instantiate(fishPrefab, numeratorBarPanel);
 
-        // Calculate position of the fish image outside the panel
-        float startXPos = -panelWidth / 2f - spacing; // Start from outside the panel
-        float targetXPos = -panelWidth / 2f + spacing * (i + 0.5f); // Move the fish to the left edge of the panel
+        // Calculate position of the fish image within the panel
+        float xPos = startXPos + (fishWidth + spacing) * i; // Add spacing between fishes
+        float yPos = 0f; // Keep fishes aligned vertically
+        Vector3 targetPosition = new Vector3(xPos, yPos, 0f);
 
-        // Set initial position of the fish outside the panel
-        fish.transform.localPosition = new Vector3(startXPos, 0f, 0f);
+        // Set initial position of the fish within the panel
+        fish.transform.localPosition = new Vector3(-panelWidth / 2f - fishWidth / 2f, yPos, 0f); // Start from outside the panel
+
+        // Set the scale of the fish based on the size of the numerator bar
+        fish.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f); // Increase the size of the fish
 
         // Animate the fish to move into its position within the panel
-        StartCoroutine(AnimateFish(fish, new Vector3(targetXPos, 0f, 0f), animationDuration, () =>
+        StartCoroutine(AnimateFish(fish, targetPosition, animationDuration, () =>
         {
             // Increment the count of instantiated fishes
             fishesInstantiated++;
@@ -141,6 +158,7 @@ public class PlayScene : MonoBehaviour
         }));
     }
 }
+
 
 IEnumerator AnimateFish(GameObject fish, Vector3 targetPosition, float duration, System.Action onComplete)
 {
@@ -191,11 +209,11 @@ void GenerateDenominatorBarPanels(int denominator)
     // Calculate the width of each panel
     float panelWidth = numeratorBarPanel.rect.width / 2; // Two panels per row
 
-       // Calculate the spacing between panels horizontally
-    float horizontalSpacing = panelWidth;
+    // Calculate the spacing between panels horizontally
+    float horizontalSpacing = panelWidth - 20f; // Increased spacing
 
     // Calculate the spacing between panels vertically
-    float verticalSpacing = 200f; // Adjust this value as needed
+    float verticalSpacing = 200f; // Increased spacing
 
     // Define the offset from the top of the screen
     float yOffset = 700f; // Adjust this value as needed
@@ -251,52 +269,66 @@ void AnimateFishesToDenominator(int correctIndex, int denominator)
     int totalFishes = numeratorBarPanel.transform.childCount;
 
     // Calculate the horizontal spacing between fishes
-    float spacing = numeratorBarPanel.rect.width / denominator;
+    float spacing = (numeratorBarPanel.rect.width / (denominator + 1)); // Add spacing between each fish
+
+    // Ensure the denominator bar panels list contains the required number of panels
+    if (denominatorBarPanels.Count < denominator)
+    {
+        Debug.LogError("Not enough denominator bar panels available.");
+        return;
+    }
 
     // Initialize the current panel index
     int currentPanelIndex = 0;
 
-    // Loop through each fish
-    StartCoroutine(AnimateFishesSequentially(totalFishes, denominator, spacing, currentPanelIndex));
-}
-
-IEnumerator AnimateFishesSequentially(int totalFishes, int denominator, float spacing, int currentPanelIndex)
-{
-    // Check total number of fishes
-    Debug.Log("Total fishes: " + totalFishes);
+    // List to keep track of fishes that have reached the denominator bars
+    List<GameObject> fishesMoved = new List<GameObject>();
 
     // Loop through each fish
     for (int i = 0; i < totalFishes; i++)
     {
-        // Get the fish transform
-        Transform fishTransform = numeratorBarPanel.transform.GetChild(i);
-
-        // Check if fishTransform exists
-        if (fishTransform == null)
+        // Check if the currentPanelIndex is valid
+        if (currentPanelIndex >= denominatorBarPanels.Count)
         {
-            Debug.LogError("Fish transform is null at index: " + i);
-            yield break; // Exit the coroutine if the fish transform is null
+            Debug.LogError("Current panel index is out of bounds: " + currentPanelIndex);
+            return; // Exit the method if the index is out of bounds
         }
 
         // Calculate the target position for the fish in the current denominator bar panel
-        float targetXPos = Mathf.Clamp(denominatorBarPanels[currentPanelIndex].localPosition.x + (i % denominator) * spacing, 0, 720);
-        float targetYPos = Mathf.Clamp(denominatorBarPanels[currentPanelIndex].localPosition.y, 0, 1560); 
+        float targetXPos = denominatorBarPanels[currentPanelIndex].localPosition.x + (i % denominator + 1) * spacing; // Add spacing to the left edge of the panel
+        float targetYPos = denominatorBarPanels[currentPanelIndex].localPosition.y;
         Vector3 targetPosition = new Vector3(targetXPos, targetYPos, 0f);
 
-        // Animate the fish to the target position within the denominator bar panel
-        yield return StartCoroutine(AnimateFishToDenominator(fishTransform.gameObject, denominatorBarPanels[currentPanelIndex], targetPosition));
+        // Get the fish transform
+        Transform fishTransform = numeratorBarPanel.transform.GetChild(i);
+
+        // Ensure the fish transform exists
+        if (fishTransform != null)
+        {
+            // Animate the fish to the target position within the denominator bar panel
+            StartCoroutine(AnimateFishToDenominator(fishTransform.gameObject, denominatorBarPanels[currentPanelIndex], targetPosition, () =>
+            {
+                // Add the fish to the list of moved fishes
+                fishesMoved.Add(fishTransform.gameObject);
+
+                // If all fishes have moved, clear the numerator bar
+                if (fishesMoved.Count == totalFishes)
+                {
+                    ClearNumeratorBar();
+                }
+            }));
+        }
+        else
+        {
+            Debug.LogError("Fish transform is null at index: " + i);
+        }
 
         // Move to the next panel for the next fish
         currentPanelIndex = (currentPanelIndex + 1) % denominator;
-
-        // Add a short delay before animating the next fish
-        yield return new WaitForSeconds(0.1f); // Adjust delay as needed
     }
 }
 
-
-
-IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel, Vector3 targetPosition)
+IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel, Vector3 targetPosition, System.Action onComplete)
 {
     float animationDuration = 1.0f; // Duration of the animation in seconds
     float elapsedTime = 0f;
@@ -335,10 +367,19 @@ IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel,
     // Ensure the fish reaches the target position exactly
     fish.transform.SetParent(targetPanel); // Set the fish's parent to the target panel
     fish.transform.localPosition = targetPosition;
+
+    // Invoke the onComplete callback when the animation is completed
+    onComplete?.Invoke();
 }
 
-
-
+void ClearNumeratorBar()
+{
+    // Clear existing fish objects in the numeratorBarPanel
+    foreach (Transform child in numeratorBarPanel.transform)
+    {
+        GameObject.Destroy(child.gameObject);
+    }
+}
 
 void ResetButtonColors()
 {
@@ -355,6 +396,7 @@ void AnswerSelected(int index)
 
     bool isCorrect = index == correctAnswerIndex;
     answerButtons[index].GetComponent<Image>().color = isCorrect ? Color.green : Color.red;
+    answerButtons[correctAnswerIndex].GetComponent<Image>().color = Color.green;
     correctlyAnswered += isCorrect ? 1 : 0;
 
     StartCoroutine(ContinueAfterFeedback(isCorrect, index));
@@ -437,4 +479,3 @@ void PlayAgainButton()
     LoadNextProblem();
 }
 }
-
