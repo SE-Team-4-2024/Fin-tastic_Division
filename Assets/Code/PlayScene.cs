@@ -7,11 +7,20 @@ using System.Collections.Generic;
 
 public class PlayScene : MonoBehaviour
 {
-    public TextMeshProUGUI questionsText, stageText, accuracyText, wrongText;
+    private float startTime;
+    private float endTime;
+    public TextMeshProUGUI questionsText, stageText, accuracyText, wrongText, rateText;
     public Button[] answerButtons;
     public GameObject pauseMenuPanel, completeGamePanel;   // backgroundOverlayPanel;
     public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
     public GameObject fishPrefab;
+
+    public GameObject fishPrefab2;
+    public GameObject fishPrefab3;
+    public GameObject fishPrefab4;
+
+    public GameObject happyFishAnim;
+    public GameObject sadFishAnim;
     public GameObject denominatorBarPanelPrefab; // Prefab for denominator bar panel
     private int correctAnswerIndex;
     private int currentQuestionIndex = 0;
@@ -19,9 +28,13 @@ public class PlayScene : MonoBehaviour
     private int correctlyAnswered = 0;
     public RectTransform numeratorBarPanel; // Reference to the numerator bar panel
     private List<RectTransform> denominatorBarPanels = new List<RectTransform>(); // List to store references to denominator bar panels
-
+    // Declare a list to keep track of instantiated fish objects
+    private List<GameObject> instantiatedFishes = new List<GameObject>();
     void Start()
     {
+          // Ensure that both fish animations are initially inactive
+        happyFishAnim.SetActive(false);
+        sadFishAnim.SetActive(false);
         pauseMenuPanel.SetActive(false);
         completeGamePanel.SetActive(false);
         pauseButton.onClick.AddListener(PauseGame);
@@ -33,6 +46,7 @@ public class PlayScene : MonoBehaviour
         pauseExitToMainMenuButton.onClick.AddListener(BackToMainMenu);
         
         CreateNewGame(); // To create a new game to store in database
+        startTime = Time.time; // Track the start time when the game starts
         LoadNextProblem(); // Start loading the first problem
     }
 
@@ -62,46 +76,47 @@ public class PlayScene : MonoBehaviour
 
     void DisplayProblem(DivisionProblem problem)
     {
-        // Reset colors of option buttons
-        ResetButtonColors();
-        stageText.text = $" {currentQuestionIndex + 1}/{totalQuestions}";
-        questionsText.text = $"{problem.numerator} / {problem.denominator} ?";
-        // Instantiate fishes for the numerator
-        GenerateFishes(problem.numerator, () =>
-        {
-            // Callback to trigger after all fishes have finished animating
-            // Generate denominator bar panels and animate fishes to move to the correct denominator bar
-            GenerateDenominatorBarPanels(problem.denominator);
-            AnimateFishesToDenominator(problem.correct_option_index, problem.denominator);
-        });
+    // Reset colors of option buttons
+    ResetButtonColors();
+    stageText.text = $" {currentQuestionIndex + 1}/{totalQuestions}";
+    questionsText.text = $"{problem.numerator} % {problem.denominator} =?";
 
-        // Ensure that the correct index is within the range of options
-        correctAnswerIndex = Mathf.Clamp(problem.correct_option_index, 0, problem.options.Count - 1);
-
-        for (int i = 0; i < answerButtons.Length; i++)
-        {
-            int optionIndex = i; // Store the current index
-
-            // Check if the option index is within the range of available options
-            if (optionIndex < problem.options.Count)
-            {
-                int option = problem.options[optionIndex];
-                answerButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = option.ToString();
-            }
-            else
-            {
-                // If the option index exceeds the number of available options, hide the button
-                answerButtons[i].gameObject.SetActive(false);
-            }
-
-            answerButtons[i].onClick.RemoveAllListeners();
-            answerButtons[i].onClick.AddListener(() => AnswerSelected(optionIndex));
-        }
-       // Generate denominator bar panels
+    // Instantiate fishes for the numerator
+    GenerateFishes(problem.numerator, () =>
+    {
+        // Callback to trigger after all fishes have finished animating
+        // Generate denominator bar panels and animate fishes to move to the correct denominator bar
         GenerateDenominatorBarPanels(problem.denominator);
-        
-    }
+        AnimateFishesToDenominator(problem.correct_option_index, problem.denominator);
+    });
 
+    // Reset the state of fish animations
+    happyFishAnim.SetActive(false);
+    sadFishAnim.SetActive(false);
+
+    // Ensure that the correct index is within the range of options
+    correctAnswerIndex = Mathf.Clamp(problem.correct_option_index, 0, problem.options.Count - 1);
+
+    for (int i = 0; i < answerButtons.Length; i++)
+    {
+        int optionIndex = i; // Store the current index
+
+        // Check if the option index is within the range of available options
+        if (optionIndex < problem.options.Count)
+        {
+            int option = problem.options[optionIndex];
+            answerButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = option.ToString();
+        }
+        else
+        {
+            // If the option index exceeds the number of available options, hide the button
+            answerButtons[i].gameObject.SetActive(false);
+        }
+
+        answerButtons[i].onClick.RemoveAllListeners();
+        answerButtons[i].onClick.AddListener(() => AnswerSelected(optionIndex));
+    }
+}
 void GenerateFishes(int numerator, System.Action onComplete)
 {
     Debug.Log("Generating fishes. Numerator: " + numerator);
@@ -111,6 +126,8 @@ void GenerateFishes(int numerator, System.Action onComplete)
     {
         GameObject.Destroy(child.gameObject);
     }
+
+    instantiatedFishes.Clear(); // Clear the list before generating new fishes
 
     // Calculate spacing between each fish image
     float panelWidth = numeratorBarPanel.rect.width;
@@ -170,6 +187,8 @@ void GenerateFishes(int numerator, System.Action onComplete)
                 StartCoroutine(DelayBeforeMovingToDenominator(delayBeforeMoving, onComplete));
             }
         }));
+         // Add the instantiated fish object to the list
+        instantiatedFishes.Add(fish);
     }
 }
 
@@ -213,12 +232,6 @@ IEnumerator DelayBeforeMovingToDenominator(float delay, System.Action onComplete
 
 void GenerateDenominatorBarPanels(int denominator)
 {
-    // Clear existing denominator bar panels
-    foreach (RectTransform panel in denominatorBarPanels)
-    {
-        Destroy(panel.gameObject);
-    }
-    denominatorBarPanels.Clear();
 
     // Calculate the width of each panel
     float panelWidth = numeratorBarPanel.rect.width / 2; // Two panels per row
@@ -395,6 +408,16 @@ void ClearNumeratorBar()
     }
 }
 
+void ClearDenominatorBarPanels()
+{
+// Clear existing denominator bar panels
+    foreach (RectTransform panel in denominatorBarPanels)
+    {
+        Destroy(panel.gameObject);
+    }
+    denominatorBarPanels.Clear();
+}
+
 void ResetButtonColors()
 {
     foreach (var button in answerButtons)
@@ -407,14 +430,91 @@ void AnswerSelected(int index)
 {
     // Reset button colors before processing the selected answer
     ResetButtonColors();
+    // Stop fish animation coroutine if it's currently running
+    StopCoroutine("AnimateFishToDenominator");
 
+     // Destroy instantiated fish objects
+    foreach (GameObject fish in instantiatedFishes)
+    {
+        Destroy(fish);
+    }
+    instantiatedFishes.Clear(); // Clear the list after destroying fish objects
     bool isCorrect = index == correctAnswerIndex;
     answerButtons[index].GetComponent<Image>().color = isCorrect ? Color.green : Color.red;
     answerButtons[correctAnswerIndex].GetComponent<Image>().color = Color.green;
     correctlyAnswered += isCorrect ? 1 : 0;
-     // To update the user response in database
+
+    // Activate the corresponding fish animation based on the user's answer
+    if (isCorrect)
+    {
+        AnimateFish(true); // Happy fish animation
+    }
+    else
+    {
+        AnimateFish(false); // Sad fish animation
+    }
+    ClearDenominatorBarPanels();
+
+    // To update the user response in the database
     StartCoroutine(UpdateUserResponseCoroutine(isCorrect)); 
     StartCoroutine(ContinueAfterFeedback(isCorrect, index));
+}
+
+// Call this function when you want to animate a fish
+void AnimateFish(bool isHappy)
+{
+    //numeratorBarPanel.gameObject.SetActive(false);
+
+    // Determine the GameObject for the fish animation based on the isHappy parameter
+    GameObject fishToAnimate = isHappy ? happyFishAnim : sadFishAnim;
+
+    // Ensure the fish GameObject is active before animating
+    fishToAnimate.SetActive(true);
+
+    // Start the MoveFishAnimation coroutine for the selected fish
+    StartCoroutine(MoveFishAnimation(fishToAnimate));
+}
+
+// IEnumerator coroutine to move the fish from right to left
+IEnumerator MoveFishAnimation(GameObject fish)
+{
+    // Get the width and height of the screen
+    float screenWidth = Screen.width;
+    float screenHeight = Screen.height;
+
+    // Define the starting and target positions
+    Vector3 screenRight = new Vector3(screenWidth, screenHeight / 1.5f, 0f);
+    Vector3 screenLeft = new Vector3(0f, screenHeight / 1.5f, 0f); // Adjusted target position
+    Vector3 startPosition = Camera.main.ScreenToWorldPoint(screenRight); // Adjusted start position
+    Vector3 targetPosition = Camera.main.ScreenToWorldPoint(screenLeft);
+
+    // Set the duration of the animation
+    float duration = 5f;
+
+    // Initialize elapsed time
+    float elapsedTime = 0f;
+
+    // Loop until the animation duration is reached
+    while (elapsedTime < duration)
+    {
+        // Calculate the interpolation factor
+        float t = elapsedTime / duration;
+
+        // Interpolate the position between starting and target positions
+        fish.transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+
+        // Increment elapsed time
+        elapsedTime += Time.deltaTime;
+
+        // Wait for the next frame
+        yield return null;
+    }
+
+    // Ensure the fish reaches the target position exactly
+    fish.transform.position = targetPosition;
+
+    // Disable the fish animation
+    fish.SetActive(false);
 }
 
  IEnumerator UpdateUserResponseCoroutine(bool isCorrect)
@@ -430,7 +530,7 @@ void AnswerSelected(int index)
 
 IEnumerator ContinueAfterFeedback(bool isCorrect, int index)
 {
-    yield return new WaitForSeconds(1);
+    yield return new WaitForSeconds(5f);
 
     currentQuestionIndex++;
     if (currentQuestionIndex < totalQuestions)
@@ -446,6 +546,13 @@ IEnumerator ContinueAfterFeedback(bool isCorrect, int index)
 void CompleteGame()
 {
     completeGamePanel.SetActive(true);
+    endTime = Time.time; // Track the end time when the game completes
+    // Calculate the total time taken in minutes
+    float totalTimeTakenInMinutes = (endTime - startTime) / 60f;
+    // Calculate the rate (questions answered per minute)
+    float rate = totalQuestions / totalTimeTakenInMinutes;
+    // Display the rate in the rateText
+    rateText.text = "Rate: " + rate.ToString("F2") + "/min";
     double accuracy = ((double)correctlyAnswered / totalQuestions) * 100;
     accuracyText.text = "Accuracy:" + $"{accuracy}%";
     wrongText.text = "Wrong:" + (totalQuestions - correctlyAnswered);
@@ -493,10 +600,19 @@ void RestartGame()
 
 void DisableGameInputs()
 {
+    // Move game inputs behind the pause menu panel
     foreach (var button in answerButtons)
     {
+        button.gameObject.transform.SetParent(pauseMenuPanel.transform);
         button.interactable = false;
     }
+    foreach (RectTransform panel in denominatorBarPanels)
+    {
+        panel.gameObject.transform.SetParent(pauseMenuPanel.transform);
+    }
+    numeratorBarPanel.gameObject.transform.SetParent(pauseMenuPanel.transform);
+    
+    // Disable other game elements
     pauseButton.interactable = false;
     fishPrefab.SetActive(false);
     denominatorBarPanelPrefab.SetActive(false);
@@ -505,15 +621,25 @@ void DisableGameInputs()
 
 void EnableGameInputs()
 {
+    // Move game inputs back to their original parent
     foreach (var button in answerButtons)
     {
+        button.gameObject.transform.SetParent(transform);
         button.interactable = true;
     }
+    foreach (RectTransform panel in denominatorBarPanels)
+    {
+        panel.gameObject.transform.SetParent(transform);
+    }
+    numeratorBarPanel.gameObject.transform.SetParent(transform);
+    
+    // Enable other game elements
     pauseButton.interactable = true;
     fishPrefab.SetActive(true);
     denominatorBarPanelPrefab.SetActive(true);
     numeratorBarPanel.gameObject.SetActive(true);
 }
+
 
 void PlayAgainButton()
 {
