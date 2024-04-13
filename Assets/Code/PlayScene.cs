@@ -484,8 +484,6 @@ void AnswerSelected(int index)
 // Call this function when you want to animate a fish
 void AnimateFish(bool isHappy)
 {
-    //numeratorBarPanel.gameObject.SetActive(false);
-
     // Determine the GameObject for the fish animation based on the isHappy parameter
     GameObject fishToAnimate = isHappy ? happyFishAnim : sadFishAnim;
 
@@ -499,18 +497,31 @@ void AnimateFish(bool isHappy)
 // IEnumerator coroutine to move the fish from right to left
 IEnumerator MoveFishAnimation(GameObject fish)
 {
+    // Get the RectTransform of the canvas
+    RectTransform canvasRect = fish.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+
     // Get the width and height of the screen
     float screenWidth = Screen.width;
     float screenHeight = Screen.height;
 
-    // Define the starting and target positions
-    Vector3 screenRight = new Vector3(screenWidth, screenHeight / 1.5f, 0f);
-    Vector3 screenLeft = new Vector3(0f, screenHeight / 1.5f, 0f); // Adjusted target position
-    Vector3 startPosition = Camera.main.ScreenToWorldPoint(screenRight); // Adjusted start position
-    Vector3 targetPosition = Camera.main.ScreenToWorldPoint(screenLeft);
+    // Define screen coordinates for the right and left side
+    Vector2 screenRight = new Vector2(screenWidth, screenHeight / 2f);
+    Vector2 screenLeft = new Vector2(0f, screenHeight / 2f);
+
+    // Convert screen coordinates to local positions of the canvas
+    Vector2 localRight;
+    Vector2 localLeft;
+    RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenRight, null, out localRight);
+    RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenLeft, null, out localLeft);
+
+    // Set the starting position to the right side of the canvas
+    fish.GetComponent<RectTransform>().anchoredPosition = localRight;
+
+    // Set the target position to the left side of the canvas
+    Vector2 targetPosition = localLeft;
 
     // Set the duration of the animation
-    float duration = 5f;
+    float duration = 3f;
 
     // Initialize elapsed time
     float elapsedTime = 0f;
@@ -522,7 +533,7 @@ IEnumerator MoveFishAnimation(GameObject fish)
         float t = elapsedTime / duration;
 
         // Interpolate the position between starting and target positions
-        fish.transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+        fish.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(localRight, targetPosition, t);
 
         // Increment elapsed time
         elapsedTime += Time.deltaTime;
@@ -532,9 +543,9 @@ IEnumerator MoveFishAnimation(GameObject fish)
     }
 
     // Ensure the fish reaches the target position exactly
-    fish.transform.position = targetPosition;
+    fish.GetComponent<RectTransform>().anchoredPosition = targetPosition;
 
-    // Disable the fish animation
+    // Disable the fish GameObject
     fish.SetActive(false);
 }
 
