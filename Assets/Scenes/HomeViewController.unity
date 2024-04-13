@@ -2383,6 +2383,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1404385770}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &268407381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2581,6 +2582,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &283018022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3199,6 +3201,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1404385770}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &402264553
 GameObject:
   m_ObjectHideFlags: 0
@@ -3347,6 +3350,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 848456719}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &412861220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3510,9 +3514,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'SETTINGS
-
-'
+  m_text: USER
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3806,6 +3808,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1394739334}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &463182709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4824,6 +4827,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 402264553}
+  Newuserpanel: {fileID: 0}
 --- !u!65 &632620061
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5771,6 +5775,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1404385770}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &791230188
 GameObject:
   m_ObjectHideFlags: 0
@@ -6417,6 +6422,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1444409799}
+  Newuserpanel: {fileID: 0}
 --- !u!65 &919859064
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6754,6 +6760,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &938590087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7375,6 +7382,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &993986193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8169,6 +8177,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1404385770}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &1249991570
 GameObject:
   m_ObjectHideFlags: 0
@@ -8223,7 +8232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Edituserpanel: {fileID: 6303000787108271313}
-  Userpanel1: {fileID: 0}
+  Userpanel1: {fileID: 962834129}
   username: {fileID: 1783613860}
   un1: {fileID: 987670874866995843}
   un2: {fileID: 0}
@@ -8232,7 +8241,8 @@ MonoBehaviour:
   Userpanel2: {fileID: 0}
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
-  Settingspanel: {fileID: 962834129}
+  Settingspanel: {fileID: 1404385770}
+  Newuserpanel: {fileID: 848456719}
 --- !u!65 &1249991573
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8300,7 +8310,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1249991572}
         m_TargetAssemblyTypeName: neweditpanel, Assembly-CSharp
-        m_MethodName: exitsettings
+        m_MethodName: exitopenusername1
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8435,6 +8445,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 402264553}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &1278731822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9981,6 +9992,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &1415603105
 GameObject:
   m_ObjectHideFlags: 0
@@ -11230,6 +11242,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1444409799}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &1625670202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11568,6 +11581,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &1671584158
 GameObject:
   m_ObjectHideFlags: 0
@@ -12043,6 +12057,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 962834129}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &1734890339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12556,6 +12571,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &1783613860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13199,6 +13215,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &1843652529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13883,16 +13900,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Edituserpanel: {fileID: 6303000787108271313}
-  Userpanel1: {fileID: 0}
+  Userpanel1: {fileID: 962834129}
   username: {fileID: 1843652529}
   un1: {fileID: 987670874866995843}
-  un2: {fileID: 0}
-  un3: {fileID: 0}
-  un4: {fileID: 0}
-  Userpanel2: {fileID: 0}
-  Userpanel3: {fileID: 0}
-  Userpanel4: {fileID: 0}
-  Settingspanel: {fileID: 848456719}
+  un2: {fileID: 4981423978060677776}
+  un3: {fileID: 7530521471819802943}
+  un4: {fileID: 4176569130277967362}
+  Userpanel2: {fileID: 1444409799}
+  Userpanel3: {fileID: 402264553}
+  Userpanel4: {fileID: 1394739334}
+  Settingspanel: {fileID: 1404385770}
+  Newuserpanel: {fileID: 848456719}
 --- !u!65 &1936563470
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13960,7 +13978,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1936563469}
         m_TargetAssemblyTypeName: neweditpanel, Assembly-CSharp
-        m_MethodName: exitsettings
+        m_MethodName: exitNewuserpanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -13984,7 +14002,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1936563469}
         m_TargetAssemblyTypeName: neweditpanel, Assembly-CSharp
-        m_MethodName: save1
+        m_MethodName: Switch
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14364,6 +14382,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1394739334}
+  Newuserpanel: {fileID: 0}
 --- !u!65 &1951155130
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -17000,6 +17019,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!222 &6001615055079083069
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17204,7 +17224,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 6853192834023455276}
         m_TargetAssemblyTypeName: neweditpanel, Assembly-CSharp
-        m_MethodName: openusername1
+        m_MethodName: openNewuserpanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -17415,13 +17435,14 @@ MonoBehaviour:
   Userpanel1: {fileID: 962834129}
   username: {fileID: 1783613860}
   un1: {fileID: 987670874866995843}
-  un2: {fileID: 0}
-  un3: {fileID: 0}
-  un4: {fileID: 0}
+  un2: {fileID: 4981423978060677776}
+  un3: {fileID: 7530521471819802943}
+  un4: {fileID: 4176569130277967362}
   Userpanel2: {fileID: 0}
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 848456719}
 --- !u!222 &7033843844911773505
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17474,6 +17495,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 402264553}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &7143072615424517910
 GameObject:
   m_ObjectHideFlags: 0
@@ -17563,6 +17585,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &7530521471819802943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17620,6 +17643,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &7619847485637636867
 GameObject:
   m_ObjectHideFlags: 0
@@ -17664,6 +17688,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &7766701701837532621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17725,6 +17750,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1404385770}
+  Newuserpanel: {fileID: 0}
 --- !u!224 &7795484678355691846
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17768,6 +17794,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &7862881686512087440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17837,6 +17864,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!1 &8222272225725868531
 GameObject:
   m_ObjectHideFlags: 0
@@ -17975,6 +18003,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 0}
   Settingspanel: {fileID: 1404385770}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &8697240486920642283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18130,6 +18159,7 @@ MonoBehaviour:
   Userpanel3: {fileID: 0}
   Userpanel4: {fileID: 1394739334}
   Settingspanel: {fileID: 0}
+  Newuserpanel: {fileID: 0}
 --- !u!114 &9212158303594084822
 MonoBehaviour:
   m_ObjectHideFlags: 0

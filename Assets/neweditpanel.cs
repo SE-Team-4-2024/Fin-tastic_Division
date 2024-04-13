@@ -49,7 +49,7 @@ public GameObject Edituserpanel;
            public void save2()
       {
          un2.text=username.text;
-        username.text="";
+       username.text="";
        
            }
       
@@ -102,8 +102,45 @@ public GameObject Edituserpanel;
     public void exitsettings()
     {
          Settingspanel.SetActive(false);
+}  
+     public GameObject Newuserpanel;
+         public void  openNewuserpanel() 
+    {
+        if( Newuserpanel!=null)
+           Newuserpanel.SetActive(true);
+    }
+    public void exitNewuserpanel()
+    {
+          Newuserpanel.SetActive(false);
     }  
-        
-      
-      
+public void Switch()
+{
+
+   if(un1.text =="")
+      {
+        un1.text=username.text;
+        username.text="";
+      }
+    else
+    {
+       if(un2.text =="")
+       {
+       un2.text=username.text;
+       username.text="";
+       }
+        else
+      {
+        if(un3.text =="")
+       { 
+          un3.text=username.text;
+          username.text="";
+        }
+        else
+       {
+        un4.text=username.text;
+        username.text=""; 
+       }
+      }
+}
+}
 }
