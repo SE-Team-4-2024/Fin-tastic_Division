@@ -10,20 +10,23 @@ public class HomeScene : MonoBehaviour
     public Button okayButton, settingsButton;
     [SerializeField]
     private GameObject settingsPanel;
+     
     [SerializeField]
     private GameObject backgroundOverlayPanel;
     public void OnButtonClick()
     {
         // Activate the settings panel
         settingsPanel.SetActive(true);
+        
         backgroundOverlayPanel.SetActive(true);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        settingsButton.onClick.AddListener(OpenSettingsPanel);
+        //settingsButton.onClick.AddListener(OpenSettingsPanel);
         okayButton.onClick.AddListener(CloseSettingsPanel);
+        
     }
 
     public void OpenSettingsPanel() 
