@@ -6,7 +6,7 @@
 trigger:
   branches:
     include:
-      - '*'  # Trigger on all pushes
+      - "*"  # Trigger on all pushes
   #paths:
    # include:
     #  - '**'  # Trigger on changes to any file
