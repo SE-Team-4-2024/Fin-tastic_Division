@@ -24,7 +24,14 @@ public class HomeScene : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //settingsButton.onClick.AddListener(OpenSettingsPanel);
+        // StartCoroutine(GetListOfUsers());
+        // StartCoroutine(GetorCreateUser());
+        //  StartCoroutine(UpdateName("johnwick"));
+        // StartCoroutine(UpdateSound(true));
+        // StartCoroutine(UpdateMusic(true));
+        // StartCoroutine(UpdateProfilePicture(1));
+        StartCoroutine(UpdatePrimaryUser("device123546789_gks_gowthams"));
+        settingsButton.onClick.AddListener(OpenSettingsPanel);
         okayButton.onClick.AddListener(CloseSettingsPanel);
         
     }
@@ -46,4 +53,179 @@ public class HomeScene : MonoBehaviour
     {
         
     }
+private IEnumerator GetListOfUsers()
+{
+    string deviceId = SystemInfo.deviceUniqueIdentifier;
+    // string deviceId = "device123546789_gks";
+
+    // Start the coroutine to fetch users
+    IEnumerator coroutine = UserProfile.GetUsers(deviceId, onSuccess, onError);
+    yield return StartCoroutine(coroutine);
+}
+
+private void onSuccess(User[] users)
+{
+    Debug.Log(users);
+    // Handle the success case here
+}
+
+private void onError(string errorMessage)
+{
+    Debug.LogError("Error fetching user data: " + errorMessage);
+    //Need to handle the logic to open the create user panel here..
+}
+
+private IEnumerator UpdateName(string name){
+    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    string userId = PlayerPrefs.GetString("userID");
+    Debug.Log("User" +userId);
+
+    yield return StartCoroutine(UserProfile.UpdateName(userId, name,
+        // onSuccess callback
+        (response) =>
+        {
+            Debug.Log("Name Updated Successfully" + response);
+            // Handle successful creation
+        },
+        // onError callback
+        (errorMessage) =>
+        {
+            Debug.LogError(errorMessage);
+            // Handle error
+        }
+    ));
+}
+
+
+
+private IEnumerator UpdateSound(bool isSoundEnabled){
+    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    string userId = PlayerPrefs.GetString("userID");
+    Debug.Log("User Sound Enabled" +isSoundEnabled);
+    string isSoundEnabledValue = isSoundEnabled.ToString();
+
+
+    yield return StartCoroutine(UserProfile.UpdateSound(userId, isSoundEnabledValue,
+        // onSuccess callback
+        (response) =>
+        {
+            Debug.Log("Sound Updated Successfully" + response);
+            // Handle successful creation
+        },
+        // onError callback
+        (errorMessage) =>
+        {
+            Debug.LogError(errorMessage);
+            // Handle error
+        }
+    ));
+}
+
+
+private IEnumerator UpdateMusic(bool isMusicEnabled){
+    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    string userId = PlayerPrefs.GetString("userID");
+    Debug.Log("User Music Enabled" +isMusicEnabled);
+    string isMusicEnabledValue = isMusicEnabled.ToString();
+
+    yield return StartCoroutine(UserProfile.UpdateMusic(userId, isMusicEnabledValue,
+        // onSuccess callback
+        (response) =>
+        {
+            Debug.Log("Music Updated Successfully" + response);
+            // Handle successful creation
+        },
+        // onError callback
+        (errorMessage) =>
+        {
+            Debug.LogError(errorMessage);
+            // Handle error
+        }
+    ));
+}
+
+
+private IEnumerator UpdateProfilePicture(int profilePicture){
+    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    string userId = PlayerPrefs.GetString("userID");
+    Debug.Log("User Profile Picture" +profilePicture);
+    string profilePictureValue = profilePicture.ToString();
+
+    yield return StartCoroutine(UserProfile.UpdateProfilePicture(userId, profilePictureValue,
+        // onSuccess callback
+        (response) =>
+        {
+            Debug.Log("Profile Picture Updated Successfully" + response);
+            // Handle successful creation
+        },
+        // onError callback
+        (errorMessage) =>
+        {
+            Debug.LogError(errorMessage);
+            // Handle error
+        }
+    ));
+}
+
+
+
+private IEnumerator UpdatePrimaryUser(string userID){
+    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    string deviceID = "device123546789_gksssss";
+
+    yield return StartCoroutine(UserProfile.UpdatePrimaryUser(userID,deviceID,
+        // onSuccess callback
+        (response) =>
+        {
+            Debug.Log("Profile Picture Updated Successfully" + response);
+            // Handle successful creation
+        },
+        // onError callback
+        (errorMessage) =>
+        {
+            Debug.LogError(errorMessage);
+            // Handle error
+        }
+    ));
+}
+private IEnumerator GetorCreateUser()
+{
+    // string deviceId = SystemInfo.deviceUniqueIdentifier;
+    string deviceId = "device123546789_gksssss";
+    string name = "gowtham";
+    string profilePicture = "3";
+
+    yield return StartCoroutine(UserProfile.GetorCreateUser(deviceId, name, profilePicture,
+        // onSuccess callback
+        (userId) =>
+        {
+            PlayerPrefs.SetString("userID", userId);
+            // Handle successful creation
+        },
+        // onError callback
+        (errorMessage) =>
+        {
+            Debug.LogError(errorMessage);
+            // Handle error
+        }
+    ));
+}
+
+
+
+
+private void onSuccessfulCreation(string userId)
+{
+    Debug.Log(userId);
+    Debug.Log("User id fetched");
+    
+    // Handle the success case here
+}
+
+
+
+
+
+
+
 }

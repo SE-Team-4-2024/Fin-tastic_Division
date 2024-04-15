@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 public static class GameManager
 {
-    public static string baseAzureFunctionUrl = "https://team4.azurewebsites.net/api/game/";
-    public static string azureFunctionAuthenticationParams = "code=Z6mlsbcT-k1-8gQdI-O5_-u411MSkooUy0SZPwGWq1xkAzFu-asVYw==&clientId=default";
+    public static string baseAzureFunctionUrl = "https://team4-fin.azurewebsites.net/api/game/";
+    public static string azureFunctionAuthenticationParams = "code=kBwvubTGVz7PVhfKye_z0qqRZSythQlFKnhG2zso4r2IAzFumD7ejw==&clientId=default";
 
     public static IEnumerator UpdateUserResponse(string gameID, bool validUserResponse, System.Action<bool> onSuccess, System.Action<string> onError)
     {
@@ -14,7 +14,7 @@ public static class GameManager
         string queryParams = $"?{azureFunctionAuthenticationParams}&validUserResponse={validUserResponse}";
         string fullUrl = baseAzureFunctionUrl + endpoint + queryParams;
 
-        Debug.Log($"Updating user response as: {validUserResponse}");
+        Debug.Log($"Updating user response as: {validUserResponse} at {fullUrl}");
 
         using (UnityWebRequest www = UnityWebRequest.Post(fullUrl, new WWWForm()))
         {
