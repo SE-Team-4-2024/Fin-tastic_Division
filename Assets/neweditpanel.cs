@@ -10,6 +10,47 @@ using UnityEngine.UI;
 public class neweditpanel : MonoBehaviour
 {
     // Start is called before the first frame update
+    void Start()
+    {
+     disablebutton2();
+     disablebutton3();
+     disablebutton4();
+    }
+    public Button Button2;
+      public Button Button1;
+      public Button Button3;
+      public Button Button4;
+      public GameObject Object;
+       public void disablebutton2()
+      {
+        Button2.gameObject.SetActive(false);
+         
+         
+      }
+      public void enablebutton2()
+      {
+         Button2.gameObject.SetActive(true);
+      }
+       public void disablebutton3()
+      {
+        Button3.gameObject.SetActive(false);
+         
+         
+      }
+      public void enablebutton3()
+      {
+         Button3.gameObject.SetActive(true);
+      }
+ public void disablebutton4()
+      {
+        Button4.gameObject.SetActive(false);
+         
+         
+      }
+      public void enablebutton4()
+      {
+         Button4.gameObject.SetActive(true);
+      }
 
 public GameObject Edituserpanel;
     public void openedit() 
@@ -120,6 +161,7 @@ public void Switch()
       {
         un1.text=username.text;
         username.text="";
+         
       }
     else
     {
@@ -127,6 +169,7 @@ public void Switch()
        {
        un2.text=username.text;
        username.text="";
+         enablebutton2();
        }
         else
       {
@@ -134,13 +177,101 @@ public void Switch()
        { 
           un3.text=username.text;
           username.text="";
+           enablebutton3();
+
         }
         else
        {
         un4.text=username.text;
         username.text=""; 
+        enablebutton4();
        }
       }
 }
 }
+               public Text hello;
+               public Toggle Toggle3;
+       public Toggle Toggle2;
+       public Toggle Toggle1;
+       public Toggle Toggle4;
+
+
+     
+             public void opentoggle1() 
+    {
+        if(Toggle1.isOn)
+        {
+          hello.text=un1.text;
+          Toggle2.interactable=false;
+          Toggle3.interactable=false;
+          Toggle4.interactable=false;
+
+        }
+          else{
+               
+               hello.text="";
+                Toggle2.interactable=true;
+          Toggle3.interactable=true;
+          Toggle4.interactable=true;
+           }
+          
+    }
+    
+     
+         public void opentoggle2() 
+    {
+        if(Toggle2.isOn)
+        {
+          hello.text=un2.text;
+           Toggle1.interactable=false;
+          Toggle3.interactable=false;
+          Toggle4.interactable=false;
+        }
+          else{
+               
+               hello.text="";
+                Toggle1.interactable=true;
+          Toggle3.interactable=true;
+          Toggle4.interactable=true;
+           }
+}
+
+         public void opentoggle3() 
+    {
+        if(Toggle3.isOn)
+        {
+          hello.text=un3.text;
+           Toggle1.interactable=false;
+          Toggle2.interactable=false;
+          Toggle4.interactable=false;
+        }
+          else{
+               
+               hello.text="";
+                Toggle1.interactable=true;
+          Toggle2.interactable=true;
+          Toggle4.interactable=true;
+           }
+          
+}
+
+         public void opentoggle4() 
+    {
+        if(Toggle4.isOn)
+        {
+          hello.text=un4.text;
+           Toggle1.interactable=false;
+          Toggle3.interactable=false;
+          Toggle2.interactable=false;
+        }
+          else{
+               
+               hello.text="";
+                Toggle1.interactable=true;
+          Toggle3.interactable=true;
+          Toggle2.interactable=true;
+           }
+}
+
+
 }
