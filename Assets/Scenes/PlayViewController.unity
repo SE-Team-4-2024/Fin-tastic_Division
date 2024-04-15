@@ -2640,6 +2640,7 @@ GameObject:
   - component: {fileID: 814326160}
   - component: {fileID: 814326161}
   - component: {fileID: 814326162}
+  - component: {fileID: 814326163}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2857,6 +2858,18 @@ MonoBehaviour:
   numeratorPanel: {fileID: 411123877}
   numeratorBarPanel: {fileID: 133289069}
   FakeDenoPanel: {fileID: 1523108292}
+--- !u!114 &814326163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 814326153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db50b5d3137d4684cbcbc4500d9b0246, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &834990405
 GameObject:
   m_ObjectHideFlags: 0

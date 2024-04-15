@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using GoogleMobileAds;
+using GoogleMobileAds.Api;
 
 public class HomeScene : MonoBehaviour
 {
@@ -24,6 +26,7 @@ public class HomeScene : MonoBehaviour
     {
         settingsButton.onClick.AddListener(OpenSettingsPanel);
         okayButton.onClick.AddListener(CloseSettingsPanel);
+        MobileAds.Initialize(initStatus => { });//You can handle the initialization here
     }
 
     public void OpenSettingsPanel() 
