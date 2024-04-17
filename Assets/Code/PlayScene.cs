@@ -11,7 +11,7 @@ public class PlayScene : MonoBehaviour
     private float endTime;
     public TextMeshProUGUI questionsText, stageText, accuracyText, wrongText, rateText;
     public Button[] answerButtons;
-    public GameObject pauseMenuPanel, completeGamePanel;   // backgroundOverlayPanel;
+    public GameObject pauseMenuPanel, completeGamePanel, hidingPanel;
     public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
     public GameObject fishPrefab;
 
@@ -260,8 +260,6 @@ GameObject GetFishPrefabByIndex(int index)
     }
 }
 
-
-
 IEnumerator AnimateFish(GameObject fish, Vector3 targetPosition, float duration, System.Action onComplete)
 {
     float elapsedTime = 0f;
@@ -301,21 +299,23 @@ IEnumerator DelayBeforeMovingToDenominator(float delay, System.Action onComplete
 
 void GenerateDenominatorBarPanels(int denominator)
 {
-
     // Calculate the width of each panel
     float panelWidth = numeratorBarPanel.rect.width / 2; // Two panels per row
 
     // Calculate the spacing between panels horizontally
-    float horizontalSpacing = panelWidth - 20f; // Increased spacing
+    float horizontalSpacing = panelWidth + 50f; // Increased spacing
 
-    // Calculate the spacing between panels vertically
-    float verticalSpacing = 200f; // Increased spacing
+    // Increase the vertical spacing between panels
+    float verticalSpacing = 250f; // Increased vertical spacing
 
     // Define the offset from the top of the screen
-    float yOffset = 700f; // Adjust this value as needed
+    float yOffset = 600f; // Adjust this value as needed
 
-    // Check if there's only one denominator panel
-    if (denominator == 1)
+    // Clear the existing denominator bar panels
+    ClearDenominatorBarPanels();
+
+    // Instantiate and position denominator bar panels
+    for (int i = 0; i < denominator; i++)
     {
         // Instantiate the denominator bar panel from the prefab
         GameObject panelObject = Instantiate(denominatorBarPanelPrefab, transform);
@@ -324,38 +324,25 @@ void GenerateDenominatorBarPanels(int denominator)
         RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
         denominatorBarPanels.Add(panelRectTransform);
 
-        // Set the position of the panel to the center of the screen
-        panelRectTransform.localPosition = new Vector3(0f, yOffset, 0f);
-    }
-    else
-    {
-        // Track the current row
-        int row = 0;
+        // Calculate the position of the panel
+        float panelXPosition;
+        float panelYPosition;
 
-        // Instantiate and position denominator bar panels
-        for (int i = 0; i < denominator; i++)
+        if (denominator == 3 && i == 2)
         {
-            // Instantiate the denominator bar panel from the prefab
-            GameObject panelObject = Instantiate(denominatorBarPanelPrefab, transform);
-
-            // Add the RectTransform component to the list
-            RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
-            denominatorBarPanels.Add(panelRectTransform);
-
-            // Calculate the position of the panel
-            float panelXPosition = i % 2 == 0 ? -panelWidth / 2 : panelWidth / 2;
-            float panelYPosition = yOffset - row * verticalSpacing;
-
-            // Set the position of the panel
-            panelRectTransform.localPosition = new Vector3(panelXPosition, panelYPosition, 0f);
-
-            // Check if two panels have been placed in the current row
-            if (i % 2 == 1)
-            {
-                // Move to the next row
-                row++;
-            }
+            // Center the third panel below the first two panels
+            panelXPosition = 0f; // Center X position
+            panelYPosition = yOffset - verticalSpacing; // Adjusted Y position
         }
+        else
+        {
+            // Regular positioning for the other panels
+            panelXPosition = i % 2 == 0 ? -panelWidth / 2 : panelWidth / 2;
+            panelYPosition = yOffset - (i / 2) * verticalSpacing;
+        }
+
+        // Set the position of the panel
+        panelRectTransform.localPosition = new Vector3(panelXPosition, panelYPosition, 0f);
     }
 }
 
@@ -364,8 +351,11 @@ void AnimateFishesToDenominator(int answer, int denominator)
     // Get the total number of fishes
     int totalFishes = numeratorBarPanel.transform.childCount;
 
-    // Calculate the horizontal spacing between fishes
-    float spacing = (numeratorBarPanel.rect.width / (answer + 1)); // Add spacing between each fish
+    // Calculate total fish width based on fish prefab
+    float fishWidth = fishPrefab.GetComponent<RectTransform>().rect.width;
+    
+    // Define horizontal spacing between fishes
+    float spacing = 25f;
 
     // Ensure the denominator bar panels list contains the required number of panels
     if (denominatorBarPanels.Count < denominator)
@@ -374,11 +364,17 @@ void AnimateFishesToDenominator(int answer, int denominator)
         return;
     }
 
+    // Adjust fish size based on denominator bar width
+    float fishScaleFactor = denominatorBarPanels[0].rect.width / (2 * fishWidth);
+
+    // Clamp the fishScaleFactor to a reasonable range
+    fishScaleFactor = Mathf.Clamp(fishScaleFactor, 1.0f, 2.0f);
+
     // Distribute exactly 'answer' amount of fishes to each denominator panel
     for (int currentPanelIndex = 0; currentPanelIndex < denominator; currentPanelIndex++)
     {
-        // Calculate the target position for the fishes in the current denominator bar panel
-        float targetXPos = denominatorBarPanels[currentPanelIndex].localPosition.x + spacing; // Start from the left edge of the panel
+        // Calculate the initial target position for the fishes in the current denominator bar panel
+        float targetXPos = denominatorBarPanels[currentPanelIndex].localPosition.x; // Start from the left edge of the panel
         float targetYPos = denominatorBarPanels[currentPanelIndex].localPosition.y;
         Vector3 targetPosition = new Vector3(targetXPos, targetYPos, 0f);
 
@@ -391,6 +387,9 @@ void AnimateFishesToDenominator(int answer, int denominator)
             {
                 GameObject fish = fishTransform.gameObject;
 
+                // Set the fish scale
+                fish.transform.localScale = new Vector3(fishScaleFactor, fishScaleFactor, 1f);
+
                 // Animate the fish to the target position within the current denominator bar panel
                 StartCoroutine(AnimateFishToDenominator(fish, denominatorBarPanels[currentPanelIndex], targetPosition, () =>
                 {
@@ -402,7 +401,7 @@ void AnimateFishesToDenominator(int answer, int denominator)
                 }));
 
                 // Update the target position for the next fish in the same denominator bar panel
-                targetXPos += spacing;
+                targetXPos += fishWidth + spacing; // Add fish width and spacing
                 targetPosition = new Vector3(targetXPos, targetYPos, 0f);
             }
             else
@@ -412,6 +411,8 @@ void AnimateFishesToDenominator(int answer, int denominator)
         }
     }
 }
+
+
 
 IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel, Vector3 targetPosition, System.Action onComplete)
 {
@@ -644,12 +645,15 @@ void CompleteGame()
 
 void PauseGame()
 {
+
+    hidingPanel.SetActive(true);
     pauseMenuPanel.SetActive(true);
     DisableGameInputs();
 }
 
 void ResumeGame()
 {
+    hidingPanel.SetActive(false);
     pauseMenuPanel.SetActive(false);
     EnableGameInputs();
 }
@@ -675,17 +679,21 @@ void DisableGameInputs()
         button.gameObject.transform.SetParent(pauseMenuPanel.transform);
         button.interactable = false;
     }
+    
+    // Hide the denominator bars and fishes inside them
     foreach (RectTransform panel in denominatorBarPanels)
     {
-        panel.gameObject.transform.SetParent(pauseMenuPanel.transform);
+        panel.gameObject.SetActive(false);
     }
-    numeratorBarPanel.gameObject.transform.SetParent(pauseMenuPanel.transform);
     
+    // Move numerator bar behind the pause menu panel and hide it
+    numeratorBarPanel.gameObject.transform.SetParent(pauseMenuPanel.transform);
+    numeratorBarPanel.gameObject.SetActive(false);
+
     // Disable other game elements
     pauseButton.interactable = false;
     fishPrefab.SetActive(false);
     denominatorBarPanelPrefab.SetActive(false);
-    numeratorBarPanel.gameObject.SetActive(false);
 }
 
 void EnableGameInputs()
@@ -696,19 +704,22 @@ void EnableGameInputs()
         button.gameObject.transform.SetParent(transform);
         button.interactable = true;
     }
+    
+    // Show the denominator bars and fishes inside them
     foreach (RectTransform panel in denominatorBarPanels)
     {
-        panel.gameObject.transform.SetParent(transform);
+        panel.gameObject.SetActive(true);
     }
-    numeratorBarPanel.gameObject.transform.SetParent(transform);
     
+    // Move numerator bar back to its original parent and show it
+    numeratorBarPanel.gameObject.transform.SetParent(transform);
+    numeratorBarPanel.gameObject.SetActive(true);
+
     // Enable other game elements
     pauseButton.interactable = true;
     fishPrefab.SetActive(true);
     denominatorBarPanelPrefab.SetActive(true);
-    numeratorBarPanel.gameObject.SetActive(true);
 }
-
 
 void PlayAgainButton()
 {
