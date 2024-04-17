@@ -221,7 +221,7 @@ public static IEnumerator UpdateMusic(string userId, string isMusicEnabled, Syst
 public static IEnumerator UpdatePrimaryUser(string userId, string deviceId, System.Action<bool> onSuccess, System.Action<bool> onError)
 {
 
-    string endpoint = $"{userId}/primaryUser";
+    string endpoint = $"{userId}/updatePrimaryUser";
     string queryParams = $"?{azureFunctionAuthenticationParams}&deviceID={deviceId}";
     string url = $"{baseAzureFunctionUrl}{endpoint}{queryParams}";
 

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Threading.Tasks;
+
 
 public class HomeScene : MonoBehaviour
 {
@@ -26,11 +28,11 @@ public class HomeScene : MonoBehaviour
     {
         // StartCoroutine(GetListOfUsers());
         // StartCoroutine(GetorCreateUser());
-        //  StartCoroutine(UpdateName("johnwick"));
-        // StartCoroutine(UpdateSound(true));
+        // StartCoroutine(UpdateName("johnwick"));
+        // StartCoroutine(UpdateSound(false));
         // StartCoroutine(UpdateMusic(true));
         // StartCoroutine(UpdateProfilePicture(1));
-        StartCoroutine(UpdatePrimaryUser("device123546789_gks_gowthams"));
+        // StartCoroutine(UpdatePrimaryUser("device123546789_gksssss_gowtham"));
         settingsButton.onClick.AddListener(OpenSettingsPanel);
         okayButton.onClick.AddListener(CloseSettingsPanel);
         
@@ -56,16 +58,18 @@ public class HomeScene : MonoBehaviour
 private IEnumerator GetListOfUsers()
 {
     string deviceId = SystemInfo.deviceUniqueIdentifier;
-    // string deviceId = "device123546789_gks";
+    // string deviceId = "gowtham_gowtham";
 
     // Start the coroutine to fetch users
     IEnumerator coroutine = UserProfile.GetUsers(deviceId, onSuccess, onError);
     yield return StartCoroutine(coroutine);
 }
 
+
 private void onSuccess(User[] users)
 {
     Debug.Log(users);
+    Debug.Log("Users Data...");
     // Handle the success case here
 }
 
@@ -76,7 +80,7 @@ private void onError(string errorMessage)
 }
 
 private IEnumerator UpdateName(string name){
-    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    PlayerPrefs.SetString("userID", "device123546789_gksssss_gowtham");
     string userId = PlayerPrefs.GetString("userID");
     Debug.Log("User" +userId);
 
@@ -99,7 +103,7 @@ private IEnumerator UpdateName(string name){
 
 
 private IEnumerator UpdateSound(bool isSoundEnabled){
-    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    PlayerPrefs.SetString("userID", "device123546789_gksssss_gowtham");
     string userId = PlayerPrefs.GetString("userID");
     Debug.Log("User Sound Enabled" +isSoundEnabled);
     string isSoundEnabledValue = isSoundEnabled.ToString();
@@ -146,7 +150,7 @@ private IEnumerator UpdateMusic(bool isMusicEnabled){
 
 
 private IEnumerator UpdateProfilePicture(int profilePicture){
-    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    PlayerPrefs.SetString("userID", "device123546789_gksssss_gowtham");
     string userId = PlayerPrefs.GetString("userID");
     Debug.Log("User Profile Picture" +profilePicture);
     string profilePictureValue = profilePicture.ToString();
@@ -170,7 +174,7 @@ private IEnumerator UpdateProfilePicture(int profilePicture){
 
 
 private IEnumerator UpdatePrimaryUser(string userID){
-    PlayerPrefs.SetString("userID", "device123546789_gks_gowsthamss");
+    PlayerPrefs.SetString("userID", "device123546789_gksssss_gowtham");
     string deviceID = "device123546789_gksssss";
 
     yield return StartCoroutine(UserProfile.UpdatePrimaryUser(userID,deviceID,
