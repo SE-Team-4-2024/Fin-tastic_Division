@@ -15,6 +15,8 @@ public class PlayScene : MonoBehaviour
     public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
     public GameObject fishPrefab;
 
+    public VoiceScript voiceScript;
+
     public GameObject fishPrefab2;
     public GameObject fishPrefab3;
     public GameObject fishPrefab4;
@@ -26,6 +28,7 @@ public class PlayScene : MonoBehaviour
     private int currentQuestionIndex = 0;
     private const int totalQuestions = 5;
     private int correctlyAnswered = 0;
+    private AudioSource audioSource;
     public RectTransform numeratorBarPanel; // Reference to the numerator bar panel
     private List<RectTransform> denominatorBarPanels = new List<RectTransform>(); // List to store references to denominator bar panels
     // Declare a list to keep track of instantiated fish objects
@@ -44,11 +47,17 @@ public class PlayScene : MonoBehaviour
         backToMainMenuButton.onClick.AddListener(BackToMainMenu);
         playAgainButton.onClick.AddListener(PlayAgainButton);
         pauseExitToMainMenuButton.onClick.AddListener(BackToMainMenu);
+        audioSource = GetComponent<AudioSource>();
+        if(audioSource != null)
+        {
+            Debug.LogError("No AudioSource Component found on this game object. Please add onr.");
+        }
         
         CreateNewGame(); // To create a new game to store in database
         startTime = Time.time; // Track the start time when the game starts
         LoadNextProblem(); // Start loading the first problem
     }
+
 
     void CreateNewGame()
     {
@@ -79,7 +88,15 @@ public class PlayScene : MonoBehaviour
     // Reset colors of option buttons
     ResetButtonColors();
     stageText.text = $" {currentQuestionIndex + 1}/{totalQuestions}";
-    questionsText.text = $"{problem.numerator} % {problem.denominator} =?";
+    questionsText.text = $"{problem.numerator} / {problem.denominator} =?";
+    if(voiceScript!=null)
+    {
+        voiceScript.Speak();
+    }
+    else
+    {
+        Debug.LogError("VoiceScript is null");
+    }
 
     // Instantiate fishes for the numerator
     GenerateFishes(problem, () =>
@@ -117,92 +134,112 @@ public class PlayScene : MonoBehaviour
         answerButtons[i].onClick.AddListener(() => AnswerSelected(optionIndex));
     }
 }
-
 void GenerateFishes(DivisionProblem problem, System.Action onComplete)
 {
     int numerator = problem.numerator; 
     int denominator = problem.denominator; 
     Debug.Log("Generating fishes. Numerator: " + numerator);
 
-    // Clear existing fish objects in the numeratorBarPanel
+    ClearExistingFishes();
+
+    float panelWidth = numeratorBarPanel.rect.width;
+    float fishWidth = fishPrefab.GetComponent<RectTransform>().rect.width;
+    float totalFishWidth = numerator * fishWidth;
+    float spacing = CalculateSpacing(panelWidth, totalFishWidth, numerator);
+    float startXPos = CalculateStartXPos(panelWidth, fishWidth);
+    float scaleFactor = CalculateScaleFactor(numerator);
+
+    InstantiateAndAnimateFishes(numerator, denominator, spacing, startXPos, fishWidth, scaleFactor, onComplete);
+}
+
+void ClearExistingFishes()
+{
     foreach (Transform child in numeratorBarPanel.transform)
     {
         GameObject.Destroy(child.gameObject);
     }
+    instantiatedFishes.Clear();
+}
 
-    instantiatedFishes.Clear(); // Clear the list before generating new fishes
+float CalculateSpacing(float panelWidth, float totalFishWidth, int numerator)
+{
+    return (panelWidth - totalFishWidth) / (numerator - 1);
+}
 
-    // Calculate spacing between each fish image
-    float panelWidth = numeratorBarPanel.rect.width;
-    float fishWidth = fishPrefab.GetComponent<RectTransform>().rect.width;
-    float totalFishWidth = numerator * fishWidth;
-    float spacing = (panelWidth - totalFishWidth) / (numerator + 1); // Divide remaining space evenly
+float CalculateStartXPos(float panelWidth, float fishWidth)
+{
+    return -panelWidth / 2f + fishWidth / 2f;
+}
 
-    Debug.Log("Panel width: " + panelWidth);
-    Debug.Log("Total fish width: " + totalFishWidth);
-    Debug.Log("Spacing between fishes: " + spacing);
+float CalculateScaleFactor(int numerator)
+{
+    float scaleFactor;
+    switch (numerator)
+    {
+        case 4:
+            scaleFactor = 2.0f;
+            break;
+        case 6:
+            scaleFactor = 1.7f;
+            break;
+        case 8:
+            scaleFactor = 1.4f;
+            break;
+        case 9:
+            scaleFactor = 1.2f;
+            break;
+        default:
+            scaleFactor = 1.5f;
+            break;
+    }
+    return scaleFactor;
+}
 
-    // Keep track of the number of fishes instantiated
+void InstantiateAndAnimateFishes(int numerator, int denominator, float spacing, float startXPos, float fishWidth, float scaleFactor, System.Action onComplete)
+{
+    int quotient = numerator / denominator;
+    float animationDuration = 0.5f;
+    float delayBeforeMoving = 1.0f;
     int fishesInstantiated = 0;
 
-    // Define the animation duration for each fish
-    float animationDuration = 0.5f; // Adjust as needed
-
-    // Define the delay before moving fishes to denominator bar panels
-    float delayBeforeMoving = 1.0f; // 1 second delay
-
-    // Define the scale factor to increase the size of the fish
-    float scaleFactor = 1.5f; // Adjust as needed
-
-    // Calculate the starting position to center the fishes horizontally
-    float startXPos = -panelWidth / 2f + spacing; // Adjusted startXPos
-
-    int quotient = numerator / denominator;
-
-    // Instantiate and animate fish images
     for (int i = 0; i < numerator; i += quotient)
     {
-        for (int j = 0; j < (quotient); j++)
+        for (int j = 0; j < quotient; j++)
         {
-            // Determine which fish prefab to use based on the current numerator and denominator
             GameObject fishPrefabToUse = GetFishPrefabByIndex(i / quotient);
-
-            Debug.Log("Index:" + i);
-
-            // Instantiate fish image from the prefab
-            GameObject fish = Instantiate(fishPrefabToUse, numeratorBarPanel);
-
-            // Calculate position of the fish image within the panel
-            float xPos = startXPos + (fishWidth + spacing) * i + j * (fishWidth + spacing); // Adjusted xPos
-            float yPos = 0f; // Keep fishes aligned vertically
-            Vector3 targetPosition = new Vector3(xPos, yPos, 0f);
-            // Set initial position of the fish outside the left boundary of the screen
-            fish.transform.localPosition = new Vector3(startXPos, yPos, 0f); 
-            // Set initial position of the fish within the panel
-            //fish.transform.localPosition = new Vector3(xPos, yPos, 0f); // Adjusted initial position
-
-            // Set the scale of the fish based on the size of the numerator bar
-            fish.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f); // Increase the size of the fish
-
-            // Animate the fish to move into its position within the panel
-            StartCoroutine(AnimateFish(fish, targetPosition, animationDuration, () =>
+            GameObject fish = InstantiateFish(fishPrefabToUse, fishWidth, startXPos, spacing, numerator, i, j);
+            
+            Vector3 targetPosition = new Vector3(startXPos + (fishWidth + spacing) * i + j * (fishWidth + spacing), 0f, 0f);
+            
+            fish.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+            
+            AnimateFishMovement(fish, targetPosition, animationDuration, () =>
             {
-                // Increment the count of instantiated fishes
                 fishesInstantiated++;
-                Debug.Log("Fishes:" + fishesInstantiated);
-
-                // Check if all fishes have been instantiated
                 if (fishesInstantiated == numerator)
                 {
-                    // Invoke the onComplete callback when all fishes are instantiated and animated
                     StartCoroutine(DelayBeforeMovingToDenominator(delayBeforeMoving, onComplete));
                 }
-            }));
-            // Add the instantiated fish object to the list
+            });
+            
             instantiatedFishes.Add(fish);
         }
     }
 }
+
+GameObject InstantiateFish(GameObject fishPrefabToUse, float fishWidth, float startXPos, float spacing, int numerator, int i, int j)
+{
+    GameObject fish = Instantiate(fishPrefabToUse, numeratorBarPanel);
+    fish.transform.localPosition = new Vector3(startXPos + i * (fishWidth + spacing), 0f, 0f);
+    return fish;
+}
+
+void AnimateFishMovement(GameObject fish, Vector3 targetPosition, float animationDuration, System.Action onComplete)
+{
+    fish.transform.localPosition = new Vector3(-numeratorBarPanel.rect.width / 2f - fish.GetComponent<RectTransform>().rect.width / 2f, 0f, 0f);
+    StartCoroutine(AnimateFish(fish, targetPosition, animationDuration, onComplete));
+}
+
 
 
 // Helper method to get the fish prefab based on the index
@@ -521,7 +558,7 @@ IEnumerator MoveFishAnimation(GameObject fish)
     Vector2 targetPosition = localLeft;
 
     // Set the duration of the animation
-    float duration = 3f;
+    float duration = 1.5f;
 
     // Initialize elapsed time
     float elapsedTime = 0f;
@@ -562,7 +599,7 @@ IEnumerator MoveFishAnimation(GameObject fish)
 
 IEnumerator ContinueAfterFeedback(bool isCorrect, int index)
 {
-    yield return new WaitForSeconds(5f);
+    yield return new WaitForSeconds(2f);
 
     currentQuestionIndex++;
     if (currentQuestionIndex < totalQuestions)

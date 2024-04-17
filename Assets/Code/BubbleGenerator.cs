@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Runtime.Serialization;
+using BubbleScript;
 
 public class BubbleGenerator : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class BubbleGenerator : MonoBehaviour
         float scale = UnityEngine.Random.Range(0.1f, 0.2f);
         bubble.transform.localScale = new Vector2(scale, scale);
         float speed = UnityEngine.Random.Range(0.9f, 1.8f);
-        bubble.GetComponent<BubbleScript>().startFloating(speed, endPoint.transform.position.x);
+        bubble.GetComponent<BubbleScript.BubbleScript>().startFloating(speed, endPoint.transform.position.x);
     }
 
 
