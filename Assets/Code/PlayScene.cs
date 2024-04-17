@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+
 
 public class PlayScene : MonoBehaviour
 {
@@ -29,7 +31,12 @@ public class PlayScene : MonoBehaviour
     private const int totalQuestions = 5;
     private int correctlyAnswered = 0;
     private AudioSource audioSource;
+
+    public AudioClip correctAnswerAudio;
+    public AudioClip wrongAnswerAudio;
     public RectTransform numeratorBarPanel; // Reference to the numerator bar panel
+    private bool isAnimating = false;
+
     private List<RectTransform> denominatorBarPanels = new List<RectTransform>(); // List to store references to denominator bar panels
     // Declare a list to keep track of instantiated fish objects
     private List<GameObject> instantiatedFishes = new List<GameObject>();
@@ -58,6 +65,18 @@ public class PlayScene : MonoBehaviour
         LoadNextProblem(); // Start loading the first problem
     }
 
+    public void PlayAudioBasedOnAnswer (bool isAnswerCorrect)
+    {
+        if(isAnswerCorrect) 
+        {
+            audioSource.clip = correctAnswerAudio;
+        }
+        else
+        {
+            audioSource.clip= wrongAnswerAudio;
+        }
+        audioSource.Play();
+    }
 
     void CreateNewGame()
     {
@@ -416,6 +435,12 @@ void AnimateFishesToDenominator(int answer, int denominator)
 
 IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel, Vector3 targetPosition, System.Action onComplete)
 {
+    if (fish == null || targetPanel == null)
+    {
+        Debug.LogWarning("Fish or target panel is null. Aborting fish animation.");
+        yield break; // Exit the coroutine
+    }
+
     float animationDuration = 1.0f; // Duration of the animation in seconds
     float elapsedTime = 0f;
     Vector3 startingPosition = fish.transform.localPosition;
@@ -425,6 +450,20 @@ IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel,
 
     while (elapsedTime < animationDuration)
     {
+        // Check if the target panel reference is still valid
+        if (targetPanel == null)
+        {
+            Debug.LogWarning("Target panel is null during fish animation. Aborting animation.");
+            yield break; // Exit the coroutine
+        }
+
+        // Check if the fish GameObject is still valid
+        if (fish == null)
+        {
+            Debug.LogWarning("Fish GameObject is null during fish animation. Aborting animation.");
+            yield break; // Exit the coroutine
+        }
+
         // Calculate the interpolation factor (0 to 1)
         float t = elapsedTime / animationDuration;
 
@@ -435,12 +474,16 @@ IEnumerator AnimateFishToDenominator(GameObject fish, RectTransform targetPanel,
         Vector3 newPosition = Vector3.Lerp(startingPosition, targetPosition, smoothT);
 
         // Ensure the fish stays within the bounds of the target panel
-        float panelWidth = targetPanel.rect.width;
-        float halfPanelWidth = panelWidth / 2f;
-        float minX = targetPanel.localPosition.x - halfPanelWidth;
-        float maxX = targetPanel.localPosition.x + halfPanelWidth;
-        newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+        if (targetPanel != null)
+        {
+            float panelWidth = targetPanel.rect.width;
+            float halfPanelWidth = panelWidth / 2f;
+            float minX = targetPanel.localPosition.x - halfPanelWidth;
+            float maxX = targetPanel.localPosition.x + halfPanelWidth;
+            newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+        }
 
+        // Update the position of the fish
         fish.transform.localPosition = newPosition;
 
         // Increment elapsed time
@@ -487,37 +530,64 @@ void ResetButtonColors()
 
 void AnswerSelected(int index)
 {
+    // Check if an animation is already in progress
+    if (isAnimating)
+    {
+        return; // Ignore the click if an animation is already playing
+    }
+
+    // Set the flag to indicate that an animation is starting
+    isAnimating = true;
+
     // Reset button colors before processing the selected answer
     ResetButtonColors();
     // Stop fish animation coroutine if it's currently running
     StopCoroutine("AnimateFishToDenominator");
 
-     // Destroy instantiated fish objects
+    // Destroy instantiated fish objects
     foreach (GameObject fish in instantiatedFishes)
     {
-        Destroy(fish);
+        // Check if the fish object is null or has been destroyed
+        if (fish != null)
+        {
+            Destroy(fish);
+        }
     }
     instantiatedFishes.Clear(); // Clear the list after destroying fish objects
-    bool isCorrect = index == correctAnswerIndex;
-    answerButtons[index].GetComponent<Image>().color = isCorrect ? Color.green : Color.red;
-    answerButtons[correctAnswerIndex].GetComponent<Image>().color = Color.green;
-    correctlyAnswered += isCorrect ? 1 : 0;
 
-    // Activate the corresponding fish animation based on the user's answer
-    if (isCorrect)
+    bool isCorrect = false; // Declare isCorrect variable outside the if statement
+
+    // Ensure that the answer buttons array is not null and the index is valid
+    if (answerButtons != null && index >= 0 && index < answerButtons.Length)
     {
-        AnimateFish(true); // Happy fish animation
+        isCorrect = index == correctAnswerIndex; // Assign isCorrect value here
+        answerButtons[index].GetComponent<Image>().color = isCorrect ? Color.green : Color.red;
+        answerButtons[correctAnswerIndex].GetComponent<Image>().color = Color.green;
+        correctlyAnswered += isCorrect ? 1 : 0;
+        PlayAudioBasedOnAnswer(isCorrect);
+        voiceScript.StopSpeaking();
+        // Activate the corresponding fish animation based on the user's answer
+        if (isCorrect)
+        {
+            AnimateFish(true); // Happy fish animation
+        }
+        else
+        {
+            AnimateFish(false); // Sad fish animation
+        }
     }
     else
     {
-        AnimateFish(false); // Sad fish animation
+        Debug.LogError("Answer button array is null or index is out of bounds.");
     }
+
     ClearDenominatorBarPanels();
 
     // To update the user response in the database
     StartCoroutine(UpdateUserResponseCoroutine(isCorrect)); 
     StartCoroutine(ContinueAfterFeedback(isCorrect, index));
 }
+
 
 // Call this function when you want to animate a fish
 void AnimateFish(bool isHappy)
@@ -611,6 +681,9 @@ IEnumerator ContinueAfterFeedback(bool isCorrect, int index)
     {
         CompleteGame();
     }
+
+    // Reset the flag to indicate that the animation is complete
+    isAnimating = false;
 }
 
 void CompleteGame()
