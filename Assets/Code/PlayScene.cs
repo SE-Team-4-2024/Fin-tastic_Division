@@ -709,7 +709,7 @@ void CompleteGame()
     double accuracy = ((double)correctlyAnswered / totalQuestions) * 100;
     accuracyText.text = "Accuracy:" + $"{accuracy}%";
     wrongText.text = "Wrong:" + (totalQuestions - correctlyAnswered);
-    StartCoroutine(UpdateGameCompletionStats(accuracy, 90)); // to update the accuracy and completion rate, once completion rate is done, need to remove hardcoded once..
+    StartCoroutine(UpdateGameCompletionStats(accuracy, rate));
     DisableGameInputs();
 }
 

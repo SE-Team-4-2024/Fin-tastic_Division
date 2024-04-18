@@ -44,7 +44,7 @@ public static class GameManager
 
     Debug.Log($"Updating game completed stats: {url}");
 
-    using (UnityWebRequest www = UnityWebRequest.Post(url, new WWWForm()))
+    using (UnityWebRequest www = UnityWebRequest.Put(url, ""))
     {
         yield return www.SendWebRequest();
 
