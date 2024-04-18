@@ -55,9 +55,9 @@ public class PlayScene : MonoBehaviour
         pauseExitToMainMenuButton.onClick.AddListener(()=>{BackToMainMenu();PlayAudioClickSound();});
         buttonClickAudioSource = GetComponent<AudioSource>();
         audioSource = GetComponent<AudioSource>();
-        if(audioSource != null)
+        if(audioSource == null)
         {
-            Debug.LogError("No AudioSource Component found on this game object. Please add onr.");
+            Debug.LogError("No AudioSource Component found on this game object. Please add one.");
         }
         
         CreateNewGame(); // To create a new game to store in database
@@ -750,7 +750,7 @@ void BackToMainMenu()
 
 IEnumerator DelayBeforeMainMenuTransition()
 {
-    yield return new WaitForSeconds(0.5f); // Adjust the delay time as needed
+    yield return new WaitForSeconds(0.3f); // Adjust the delay time as needed
     SceneManager.LoadScene("HomeViewController"); // Transition to the main menu
 }
 
