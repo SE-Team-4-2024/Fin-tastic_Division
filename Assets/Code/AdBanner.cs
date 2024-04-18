@@ -18,7 +18,7 @@ public class AdBanner : MonoBehaviour
         string adUnitId = "unexpected_platform";
 #endif
 
-        bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Top);
+        bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
     }
 
     void Start()
