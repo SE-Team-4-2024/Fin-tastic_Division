@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a261c9561d2994db58ac7322b24bee56
+guid: ee982fe75537f453ba7f9329cd14b0c7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Treasurebox_0
+      name: spritesheet (4)_0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 664
-        width: 364
-        height: 335
+        x: 275
+        y: 1476
+        width: 553
+        height: 541
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b71238367d4ae40beaf138740fb2cd8d
-      internalID: 368363614
+      spriteID: a1e7bba69a0024ba097330060d424e73
+      internalID: -482078797
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Treasurebox_1
+      name: spritesheet (4)_1
       rect:
         serializedVersion: 2
-        x: 453
-        y: 664
-        width: 364
-        height: 352
+        x: 1358
+        y: 1476
+        width: 553
+        height: 541
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9f6771a5ad31e45769283df01eef8474
-      internalID: -1131242048
+      spriteID: 0beb5996f117b43588c4c8a2e43bd914
+      internalID: 1232059617
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Treasurebox_2
+      name: spritesheet (4)_2
       rect:
         serializedVersion: 2
-        x: 879
-        y: 664
-        width: 364
-        height: 379
+        x: 2450
+        y: 1477
+        width: 523
+        height: 481
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,20 +166,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b0c57fc1d01144ff8ba06bdd7a345a1c
-      internalID: 1160769437
+      spriteID: 0d723f96605114a3a98b556830618e92
+      internalID: -877316041
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Treasurebox_3
+      name: spritesheet (4)_3
       rect:
         serializedVersion: 2
-        x: 27
-        y: 105
-        width: 364
-        height: 400
+        x: 2968
+        y: 1770
+        width: 4
+        height: 4
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -187,20 +187,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2f520a86423f3451f9bdaef267e33f65
-      internalID: -1666147965
+      spriteID: 1ad94e7ca578d459994bace66ef065e9
+      internalID: -880617076
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Treasurebox_4
+      name: spritesheet (4)_4
       rect:
         serializedVersion: 2
-        x: 453
-        y: 105
-        width: 364
-        height: 412
+        x: 289
+        y: 340
+        width: 523
+        height: 442
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -208,20 +208,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 248c8f8ca02bd4949b92d22f7950b742
-      internalID: -1468746110
+      spriteID: 7fb50178c7f1b43d981282d1868b44cf
+      internalID: -1042665614
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Treasurebox_5
+      name: spritesheet (4)_5
       rect:
         serializedVersion: 2
-        x: 875
-        y: 105
-        width: 368
-        height: 421
+        x: 1357
+        y: 381
+        width: 554
+        height: 540
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -229,8 +229,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f79daba6336964bcf959b41c99e95a8e
-      internalID: 1771501258
+      spriteID: 2df0520fb4e83454799df9b705fe2b78
+      internalID: 931724130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spritesheet (4)_6
+      rect:
+        serializedVersion: 2
+        x: 2453
+        y: 342
+        width: 518
+        height: 410
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6ce0637c72e04092acee4b6b63d46c4
+      internalID: 415205846
       vertices: []
       indices: 
       edges: []
@@ -246,12 +267,13 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Treasurebox_0: 368363614
-      Treasurebox_1: -1131242048
-      Treasurebox_2: 1160769437
-      Treasurebox_3: -1666147965
-      Treasurebox_4: -1468746110
-      Treasurebox_5: 1771501258
+      spritesheet (4)_0: -482078797
+      spritesheet (4)_1: 1232059617
+      spritesheet (4)_2: -877316041
+      spritesheet (4)_3: -880617076
+      spritesheet (4)_4: -1042665614
+      spritesheet (4)_5: 931724130
+      spritesheet (4)_6: 415205846
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

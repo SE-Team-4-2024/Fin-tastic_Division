@@ -30,10 +30,9 @@ public class PlayScene : MonoBehaviour
     private int currentQuestionIndex = 0;
     private const int totalQuestions = 5;
     private int correctlyAnswered = 0;
-    private AudioSource audioSource;
+    private AudioSource audioSource, buttonClickAudioSource;
 
-    public AudioClip correctAnswerAudio;
-    public AudioClip wrongAnswerAudio;
+    public AudioClip correctAnswerAudio, wrongAnswerAudio, buttonClickAudioClip;
     public RectTransform numeratorBarPanel; // Reference to the numerator bar panel
     private bool isAnimating = false;
 
@@ -47,13 +46,14 @@ public class PlayScene : MonoBehaviour
         sadFishAnim.SetActive(false);
         pauseMenuPanel.SetActive(false);
         completeGamePanel.SetActive(false);
-        pauseButton.onClick.AddListener(PauseGame);
-        closeButton.onClick.AddListener(ResumeGame);
-        resumeButton.onClick.AddListener(ResumeGame);
-        restartButton.onClick.AddListener(RestartGame);
-        backToMainMenuButton.onClick.AddListener(BackToMainMenu);
-        playAgainButton.onClick.AddListener(PlayAgainButton);
-        pauseExitToMainMenuButton.onClick.AddListener(BackToMainMenu);
+        pauseButton.onClick.AddListener(()=>{PauseGame();PlayAudioClickSound();});
+        closeButton.onClick.AddListener(()=>{ResumeGame();PlayAudioClickSound();});
+        resumeButton.onClick.AddListener(()=>{ResumeGame();PlayAudioClickSound();});
+        restartButton.onClick.AddListener(()=>{RestartGame();PlayAudioClickSound();});
+        backToMainMenuButton.onClick.AddListener(()=>{BackToMainMenu();PlayAudioClickSound();});
+        playAgainButton.onClick.AddListener(()=>{PlayAgainButton();PlayAudioClickSound();});
+        pauseExitToMainMenuButton.onClick.AddListener(()=>{BackToMainMenu();PlayAudioClickSound();});
+        buttonClickAudioSource = GetComponent<AudioSource>();
         audioSource = GetComponent<AudioSource>();
         if(audioSource != null)
         {
@@ -65,18 +65,27 @@ public class PlayScene : MonoBehaviour
         LoadNextProblem(); // Start loading the first problem
     }
 
-    public void PlayAudioBasedOnAnswer (bool isAnswerCorrect)
+    public void PlayAudioClickSound()
     {
-        if(isAnswerCorrect) 
+        if (buttonClickAudioSource != null && buttonClickAudioClip != null)
         {
-            audioSource.clip = correctAnswerAudio;
+            buttonClickAudioSource.clip = buttonClickAudioClip;
+            buttonClickAudioSource.Play();
         }
         else
         {
-            audioSource.clip= wrongAnswerAudio;
+            Debug.LogError("AudioSource or AudioClip is not assigned.");
         }
+    }
+
+
+    IEnumerator PlayAudioSoundAfterDelay(bool isAnswerCorrect)
+    {
+        yield return new WaitForSeconds(0.5f);
+        audioSource.clip = isAnswerCorrect ? correctAnswerAudio : wrongAnswerAudio;
         audioSource.Play();
     }
+
 
     void CreateNewGame()
     {
@@ -150,7 +159,7 @@ public class PlayScene : MonoBehaviour
         }
 
         answerButtons[i].onClick.RemoveAllListeners();
-        answerButtons[i].onClick.AddListener(() => AnswerSelected(optionIndex));
+        answerButtons[i].onClick.AddListener(() => {PlayAudioClickSound();AnswerSelected(optionIndex);StartCoroutine(PlayAudioSoundAfterDelay(optionIndex == correctAnswerIndex));});
     }
 }
 void GenerateFishes(DivisionProblem problem, System.Action onComplete)
@@ -564,7 +573,7 @@ void AnswerSelected(int index)
         answerButtons[index].GetComponent<Image>().color = isCorrect ? Color.green : Color.red;
         answerButtons[correctAnswerIndex].GetComponent<Image>().color = Color.green;
         correctlyAnswered += isCorrect ? 1 : 0;
-        PlayAudioBasedOnAnswer(isCorrect);
+        PlayAudioSoundAfterDelay(isCorrect);
         voiceScript.StopSpeaking();
         // Activate the corresponding fish animation based on the user's answer
         if (isCorrect)
@@ -688,6 +697,7 @@ IEnumerator ContinueAfterFeedback(bool isCorrect, int index)
 
 void CompleteGame()
 {
+    hidingPanel.SetActive(true);
     completeGamePanel.SetActive(true);
     endTime = Time.time; // Track the end time when the game completes
     // Calculate the total time taken in minutes
@@ -733,8 +743,17 @@ void ResumeGame()
 
 void BackToMainMenu()
 {
-    SceneManager.LoadScene("HomeViewController");
+    PlayAudioClickSound(); // Play the click sound first
+    // Use a delay to ensure the sound plays before transitioning
+    StartCoroutine(DelayBeforeMainMenuTransition());
 }
+
+IEnumerator DelayBeforeMainMenuTransition()
+{
+    yield return new WaitForSeconds(0.5f); // Adjust the delay time as needed
+    SceneManager.LoadScene("HomeViewController"); // Transition to the main menu
+}
+
 
 void RestartGame()
 {
@@ -800,6 +819,7 @@ void PlayAgainButton()
     correctlyAnswered = 0;
     completeGamePanel.SetActive(false);
     pauseButton.interactable = true;
+    hidingPanel.SetActive(false);
     EnableGameInputs();
     LoadNextProblem();
 }
