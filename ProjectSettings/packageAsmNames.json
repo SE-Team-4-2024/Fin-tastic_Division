@@ -5,12 +5,6 @@
             "fileNames": [
                 "BubbleScript"
             ]
-        },
-        {
-            "packageName": "Microsoft.CognitiveServices.Speech",
-            "fileNames": [
-                "Microsoft.CognitiveServices.Speech.csharp"
-            ]
         }
     ]
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using GoogleMobileAds;
+using GoogleMobileAds.Api;
 
 public class HomeScene : MonoBehaviour
 {
@@ -17,20 +19,21 @@ public class HomeScene : MonoBehaviour
     {
         // Get the AudioSource component attached to this GameObject or add one if not present
         audioSource = GetComponent<AudioSource>();
-        
+
         closeButton.onClick.AddListener(CloseSettingsPanel);
         settingsButton.onClick.AddListener(OpenSettingsPanel);
         okayButton.onClick.AddListener(CloseSettingsPanel);
+        MobileAds.Initialize(initStatus => { });
     }
 
-    public void OpenSettingsPanel() 
+    public void OpenSettingsPanel()
     {
         settingsPanel.SetActive(true);
         hidingPanel.SetActive(true);
         PlayClickSound();
     }
 
-    public void CloseSettingsPanel() 
+    public void CloseSettingsPanel()
     {
         settingsPanel.SetActive(false);
         hidingPanel.SetActive(false);
@@ -54,6 +57,6 @@ public class HomeScene : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
