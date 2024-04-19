@@ -20,6 +20,7 @@ public class AudioController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        backgroundMusic.volume = 0.3f;
     }
 
     public void PlayPanelSoundAndResumeBackgroundMusic()

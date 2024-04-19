@@ -344,6 +344,12 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "org.nuget.microsoft.cognitiveservices.speech": {
+      "version": "file:Microsoft.CognitiveServices.Speech",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

@@ -17,7 +17,7 @@ public class PlayScene : MonoBehaviour
     public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
     public GameObject fishPrefab;
 
-    //public VoiceScript voiceScript;
+    public VoiceScript voiceScript;
 
     public GameObject fishPrefab2;
     public GameObject fishPrefab3;
@@ -118,14 +118,14 @@ public class PlayScene : MonoBehaviour
         ResetButtonColors();
         stageText.text = $" {currentQuestionIndex + 1}/{totalQuestions}";
         questionsText.text = $"{problem.numerator} / {problem.denominator} =?";
-        // if (voiceScript != null)
-        // {
-        //     voiceScript.Speak();
-        // }
-        // else
-        // {
-        //     Debug.LogError("VoiceScript is null");
-        // }
+        if (voiceScript != null)
+        {
+            voiceScript.Speak();
+        }
+        else
+        {
+            Debug.LogError("VoiceScript is null");
+        }
 
         // Instantiate fishes for the numerator
         GenerateFishes(problem, () =>
@@ -575,7 +575,7 @@ public class PlayScene : MonoBehaviour
             answerButtons[correctAnswerIndex].GetComponent<Image>().color = Color.green;
             correctlyAnswered += isCorrect ? 1 : 0;
             PlayAudioSoundAfterDelay(isCorrect);
-            //voiceScript.StopSpeaking();
+            voiceScript.StopSpeaking();
             // Activate the corresponding fish animation based on the user's answer
             if (isCorrect)
             {
