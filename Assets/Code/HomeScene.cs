@@ -8,9 +8,10 @@ using GoogleMobileAds.Api;
 
 public class HomeScene : MonoBehaviour
 {
-    [SerializeField] private Button okayButton, settingsButton, closeButton;
+    [SerializeField] private Button okayButton, settingsButton, closeButton, editProfileButton;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject hidingPanel;
+    [SerializeField] private GameObject userProfilesPanel;
     [SerializeField] private AudioClip clickSound; // Add this field for the click sound
 
     private AudioSource audioSource; // Reference to AudioSource component
@@ -23,7 +24,12 @@ public class HomeScene : MonoBehaviour
         closeButton.onClick.AddListener(CloseSettingsPanel);
         settingsButton.onClick.AddListener(OpenSettingsPanel);
         okayButton.onClick.AddListener(CloseSettingsPanel);
+        editProfileButton.onClick.AddListener(OpenProfilePanel);
         MobileAds.Initialize(initStatus => { });
+    }
+
+    public void OpenProfilePanel(){
+        userProfilesPanel.SetActive(true);
     }
 
     public void OpenSettingsPanel()
