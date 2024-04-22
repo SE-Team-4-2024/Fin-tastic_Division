@@ -35,6 +35,9 @@ public class PlayScene : MonoBehaviour
     public AudioClip correctAnswerAudio, wrongAnswerAudio, buttonClickAudioClip;
     public RectTransform numeratorBarPanel; // Reference to the numerator bar panel
     private bool isAnimating = false;
+    private bool isSoundOn;
+    private const string SOUND_KEY = "SoundOn";
+    private AudioController audioController; // Reference to AudioController
 
     private List<RectTransform> denominatorBarPanels = new List<RectTransform>(); // List to store references to denominator bar panels
     // Declare a list to keep track of instantiated fish objects
@@ -46,13 +49,18 @@ public class PlayScene : MonoBehaviour
         sadFishAnim.SetActive(false);
         pauseMenuPanel.SetActive(false);
         completeGamePanel.SetActive(false);
-        pauseButton.onClick.AddListener(() => { PauseGame(); PlayAudioClickSound(); });
-        closeButton.onClick.AddListener(() => { ResumeGame(); PlayAudioClickSound(); });
-        resumeButton.onClick.AddListener(() => { ResumeGame(); PlayAudioClickSound(); });
-        restartButton.onClick.AddListener(() => { RestartGame(); PlayAudioClickSound(); });
-        backToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayAudioClickSound(); });
-        playAgainButton.onClick.AddListener(() => { PlayAgainButton(); PlayAudioClickSound(); });
-        pauseExitToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayAudioClickSound(); });
+        audioController = FindObjectOfType<AudioController>(); // Find the AudioController in the scene
+
+        // Load sound settings from PlayerPrefs
+        isSoundOn = PlayerPrefs.GetInt(SOUND_KEY, 1) == 1; // Default is true
+
+        pauseButton.onClick.AddListener(() => { PauseGame(); PlayClickSound(); });
+        closeButton.onClick.AddListener(() => { ResumeGame(); PlayClickSound(); });
+        resumeButton.onClick.AddListener(() => { ResumeGame(); PlayClickSound(); });
+        restartButton.onClick.AddListener(() => { RestartGame(); PlayClickSound(); });
+        backToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayClickSound(); });
+        playAgainButton.onClick.AddListener(() => { PlayAgainButton(); PlayClickSound(); });
+        pauseExitToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayClickSound(); });
         buttonClickAudioSource = GetComponent<AudioSource>();
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
@@ -65,25 +73,25 @@ public class PlayScene : MonoBehaviour
         LoadNextProblem(); // Start loading the first problem
     }
 
-    public void PlayAudioClickSound()
+    public void PlayClickSound()
     {
-        if (buttonClickAudioSource != null && buttonClickAudioClip != null)
+        if (buttonClickAudioSource != null && buttonClickAudioClip != null && isSoundOn)
         {
             buttonClickAudioSource.clip = buttonClickAudioClip;
             buttonClickAudioSource.Play();
-        }
-        else
-        {
-            Debug.LogError("AudioSource or AudioClip is not assigned.");
         }
     }
 
 
     IEnumerator PlayAudioSoundAfterDelay(bool isAnswerCorrect)
     {
-        yield return new WaitForSeconds(0.5f);
-        audioSource.clip = isAnswerCorrect ? correctAnswerAudio : wrongAnswerAudio;
-        audioSource.Play();
+        if (audioSource != null && correctAnswerAudio != null && wrongAnswerAudio != null && isSoundOn)
+        {
+            yield return new WaitForSeconds(0.5f);
+            audioSource.clip = isAnswerCorrect ? correctAnswerAudio : wrongAnswerAudio;
+            audioSource.Play();
+        }
+        
     }
 
 
@@ -118,13 +126,9 @@ public class PlayScene : MonoBehaviour
         ResetButtonColors();
         stageText.text = $" {currentQuestionIndex + 1}/{totalQuestions}";
         questionsText.text = $"{problem.numerator} / {problem.denominator} =?";
-        if (voiceScript != null)
+        if (voiceScript != null && isSoundOn)
         {
             voiceScript.Speak();
-        }
-        else
-        {
-            Debug.LogError("VoiceScript is null");
         }
 
         // Instantiate fishes for the numerator
@@ -160,7 +164,7 @@ public class PlayScene : MonoBehaviour
             }
 
             answerButtons[i].onClick.RemoveAllListeners();
-            answerButtons[i].onClick.AddListener(() => { PlayAudioClickSound(); AnswerSelected(optionIndex); StartCoroutine(PlayAudioSoundAfterDelay(optionIndex == correctAnswerIndex)); });
+            answerButtons[i].onClick.AddListener(() => { PlayClickSound(); AnswerSelected(optionIndex); StartCoroutine(PlayAudioSoundAfterDelay(optionIndex == correctAnswerIndex)); });
         }
     }
     void GenerateFishes(DivisionProblem problem, System.Action onComplete)
@@ -574,7 +578,7 @@ public class PlayScene : MonoBehaviour
             answerButtons[index].GetComponent<Image>().color = isCorrect ? Color.green : Color.red;
             answerButtons[correctAnswerIndex].GetComponent<Image>().color = Color.green;
             correctlyAnswered += isCorrect ? 1 : 0;
-            PlayAudioSoundAfterDelay(isCorrect);
+            //PlayAudioSoundAfterDelay(isCorrect);
             voiceScript.StopSpeaking();
             // Activate the corresponding fish animation based on the user's answer
             if (isCorrect)
@@ -745,7 +749,7 @@ public class PlayScene : MonoBehaviour
 
     void BackToMainMenu()
     {
-        PlayAudioClickSound(); // Play the click sound first
+        PlayClickSound(); // Play the click sound first
                                // Use a delay to ensure the sound plays before transitioning
         StartCoroutine(DelayBeforeMainMenuTransition());
     }
