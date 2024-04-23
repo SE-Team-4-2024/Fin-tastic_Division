@@ -11,6 +11,7 @@ public class DynamicUserProfileRenderer : MonoBehaviour
     public RectTransform content; // Content transform of the ScrollView
     public float spacing = 30f; // Spacing between panels
     public int panelsPerRow = 1; // Number of panels per row
+    private List<GameObject> instantiatedPanels = new List<GameObject>();
 
 
 
@@ -19,7 +20,7 @@ public class DynamicUserProfileRenderer : MonoBehaviour
         LoadUsersData();
     }
 
-    private void LoadUsersData()
+    public void LoadUsersData()
     {
         UserManager userManagerInstance = FindObjectOfType<UserManager>();
         if (userManagerInstance != null)
@@ -38,9 +39,23 @@ public class DynamicUserProfileRenderer : MonoBehaviour
 
     void PopulateScrollView(User[] users)
     {
+
+        foreach (GameObject profiles in instantiatedPanels)
+        {
+            // Check if the fish object is null or has been destroyed
+            if (profiles != null)
+            {
+                Destroy(profiles);
+            }
+        }
+        instantiatedPanels.Clear();
+
+        
         int numberOfItems = users.Length; // Use the length of the names array
         float itemSpacing = 10f; // Adjust this value to set the spacing between items
         panelPrefab.SetActive(false);
+
+        
 
         int rowCount = Mathf.CeilToInt((float)numberOfItems / panelsPerRow); // Calculate number of rows
 
@@ -87,11 +102,43 @@ public class DynamicUserProfileRenderer : MonoBehaviour
                 // Set the name text for the panel using the provided names array
                 SetPanelText(panel, user.Name);
                 SetPanelUserData(panel, user);
+                HighlightPrimaryUserPanel(panel, user);
+
+                instantiatedPanels.Add(panel);
             }
         }
     }
 
-     private void SetPanelUserData(GameObject panel, User user){
+    private void HighlightPrimaryUserPanel(GameObject panel, User user)
+    {
+
+        Debug.Log(user.IsPrimaryUser.GetType());
+        if (user.IsPrimaryUser == "true")
+        {
+            Image panelImage = panel.GetComponent<Image>();
+
+
+            Transform panelTransform = panel.transform;
+            Transform button = panelTransform.Find("makePrimary");
+            if (button != null)
+            {
+                Button okayButton = button.GetComponent<Button>();
+                if (okayButton != null)
+                {
+                    okayButton.interactable = false;
+                    Debug.Log("[Dynamic User Profile] Button disabled.");
+                }
+                else
+                {
+                    Debug.LogWarning("Button component not found on OkayButton GameObject.");
+                }
+            }
+
+            panelImage.color = new Color(0f, 0f, 0.545f); // 
+        }
+    }
+
+    private void SetPanelUserData(GameObject panel, User user){
         PanelUserData panelUserData = panel.GetComponentInChildren<PanelUserData>();
         if (panelUserData == null)
         {

@@ -32,6 +32,17 @@ public class HomeScene : MonoBehaviour
 
     public void OpenProfilesListPanel(){
         userProfilesListPanel.SetActive(true);
+        DynamicUserProfileRenderer dynamicUserProfileRenderer = FindObjectOfType<DynamicUserProfileRenderer>();
+
+        if (dynamicUserProfileRenderer != null)
+        {
+            // Call the LoadUsersData function from DynamicUserProfileRenderer
+            dynamicUserProfileRenderer.LoadUsersData();
+        }
+        else
+        {
+            Debug.LogError("DynamicUserProfileRenderer not found in the scene.");
+        }
     }
 
     public void OpenSettingsPanel()

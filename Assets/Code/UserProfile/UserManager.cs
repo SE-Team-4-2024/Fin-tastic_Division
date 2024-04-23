@@ -26,6 +26,16 @@ public class UserManager : MonoBehaviour
         User[] fetchedUsers = UserProfile.GetUsersSync(deviceId); // Assuming there's a synchronous method for fetching users
         if (fetchedUsers != null && fetchedUsers.Length >= 1)
         {
+            for (int i = 0; i < fetchedUsers.Length; i++)
+            {
+                User user = fetchedUsers[i];
+
+                if (user.IsPrimaryUser == "true")
+                {
+                    PlayerPrefs.SetString("userID", user.UserID);
+                }
+                // Do something with the user object
+            }
             Debug.Log("[User Manager] Found " + fetchedUsers.Length + " users");
             users = fetchedUsers;
         }

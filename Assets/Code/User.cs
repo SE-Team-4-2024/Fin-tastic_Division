@@ -11,7 +11,7 @@ public class User
     public string Password;
     public string DeviceID;
 
-    public string isPrimaryUser;
+    public string IsPrimaryUser;
 
     public string profilePicture;
 }
