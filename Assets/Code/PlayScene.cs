@@ -547,7 +547,11 @@ public class PlayScene : MonoBehaviour
         // Check if an animation is already in progress
         if (isAnimating)
         {
-            return; // Ignore the click if an animation is already playing
+            // Stop the animation coroutine for moving fishes to the denominator bar
+            StopCoroutine("AnimateFishToDenominator");
+
+            // Clear the numerator bar to remove any instantiated fish
+            ClearNumeratorBar();
         }
 
         // Set the flag to indicate that an animation is starting
@@ -601,7 +605,6 @@ public class PlayScene : MonoBehaviour
         StartCoroutine(UpdateUserResponseCoroutine(isCorrect));
         StartCoroutine(ContinueAfterFeedback(isCorrect, index));
     }
-
 
     // Call this function when you want to animate a fish
     void AnimateFish(bool isHappy)

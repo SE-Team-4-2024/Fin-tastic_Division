@@ -789,7 +789,7 @@ PlayerSettings:
   webGLPowerPreference: 2
   scriptingDefineSymbols:
     Android: 
-    Standalone: 
+    Standalone: ZIP_AVAILABLE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
@@ -897,11 +897,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: e02a6888-fc5c-476f-81b4-eaf02fcfa3ed
+  cloudProjectId: a26fb3a1-80f8-4f79-88ca-f559c9de034e
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Sample Project (1)
-  organizationId: sai-surya-karthik-p
+  projectName: Sample Project
+  organizationId: vamsi7909
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
