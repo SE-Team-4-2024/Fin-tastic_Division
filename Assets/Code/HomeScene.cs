@@ -8,28 +8,30 @@ using GoogleMobileAds.Api;
 
 public class HomeScene : MonoBehaviour
 {
-    [SerializeField] private Button okayButton, settingsButton, closeButton, editProfileButton;
+    [SerializeField] private Button okayButton, settingsButton, closeButton, userProfilesListButton;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject hidingPanel;
-    [SerializeField] private GameObject userProfilesPanel;
+    [SerializeField] private GameObject userProfilesListPanel;
+    [SerializeField] private GameObject newUserCreationPanel;
     [SerializeField] private AudioClip clickSound; // Add this field for the click sound
 
     private AudioSource audioSource; // Reference to AudioSource component
+     public static User[] globalUsers;
 
     private void Start()
     {
         // Get the AudioSource component attached to this GameObject or add one if not present
         audioSource = GetComponent<AudioSource>();
-
         closeButton.onClick.AddListener(CloseSettingsPanel);
         settingsButton.onClick.AddListener(OpenSettingsPanel);
         okayButton.onClick.AddListener(CloseSettingsPanel);
-        editProfileButton.onClick.AddListener(OpenProfilePanel);
+        userProfilesListButton.onClick.AddListener(OpenProfilesListPanel);
         MobileAds.Initialize(initStatus => { });
+        LoadUsersData();
     }
 
-    public void OpenProfilePanel(){
-        userProfilesPanel.SetActive(true);
+    public void OpenProfilesListPanel(){
+        userProfilesListPanel.SetActive(true);
     }
 
     public void OpenSettingsPanel()
@@ -63,6 +65,29 @@ public class HomeScene : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+    }
 
+
+    private void LoadUsersData()
+    {
+        UserManager userManagerInstance = FindObjectOfType<UserManager>();
+        if (userManagerInstance != null)
+        {
+            // Call the GetUsers method
+            User[] users = userManagerInstance.GetUsers();
+
+            if (users != null && users.Length >= 1)
+            {
+                // More than one user
+                Debug.Log("[Home Scene] Multiple users found. Handling multiple users case...");
+                globalUsers = users;
+            }
+            else
+            {
+                // No users found, so need to create new user....
+                Debug.Log("[Home Scene] No users found.");
+                newUserCreationPanel.SetActive(true);
+            }
+        }
     }
 }
