@@ -36,7 +36,6 @@ public class PlayScene : MonoBehaviour
     public RectTransform numeratorBarPanel; // Reference to the numerator bar panel
     private bool isAnimating = false;
     private bool isSoundOn;
-    private const string SOUND_KEY = "SoundOn";
     private AudioController audioController; // Reference to AudioController
 
     private List<RectTransform> denominatorBarPanels = new List<RectTransform>(); // List to store references to denominator bar panels
@@ -52,7 +51,7 @@ public class PlayScene : MonoBehaviour
         audioController = FindObjectOfType<AudioController>(); // Find the AudioController in the scene
 
         // Load sound settings from PlayerPrefs
-        isSoundOn = PlayerPrefs.GetInt(SOUND_KEY, 1) == 1; // Default is true
+        isSoundOn = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1; // Default is true
 
         pauseButton.onClick.AddListener(() => { PauseGame(); PlayClickSound(); });
         closeButton.onClick.AddListener(() => { ResumeGame(); PlayClickSound(); });
@@ -97,7 +96,7 @@ public class PlayScene : MonoBehaviour
 
     void CreateNewGame()
     {
-        string userID = "johnWick_12"; // To change in later phase, once profile page is built up.
+        string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
         Debug.Log("Creating New Game for the userID" + userID);
 
         // Call the asynchronous method and pass onSuccess and onError callbacks
@@ -107,7 +106,7 @@ public class PlayScene : MonoBehaviour
     void onSuccess(string gameID)
     {
         Debug.Log("Game Succesfully created with gameId" + gameID);
-        PlayerPrefs.SetString("gameID", gameID);
+        PlayerPrefs.SetString(UserManager.GAME_KEY, gameID);
     }
 
     void LoadNextProblem()
@@ -676,7 +675,7 @@ public class PlayScene : MonoBehaviour
 
     IEnumerator UpdateUserResponseCoroutine(bool isCorrect)
     {
-        string gameID = PlayerPrefs.GetString("gameID");
+        string gameID = PlayerPrefs.GetString(UserManager.GAME_KEY);
         yield return GameManager.UpdateUserResponse(gameID, isCorrect, onSuccessfulUpdate, OnError);
     }
 
@@ -724,7 +723,7 @@ public class PlayScene : MonoBehaviour
 
     IEnumerator UpdateGameCompletionStats(double accuracy, double completionRate)
     {
-        string gameID = PlayerPrefs.GetString("gameID");
+        string gameID = PlayerPrefs.GetString(UserManager.GAME_KEY);
         // Define the success and error callbacks
         System.Action<bool> onSuccess = (bool success) =>
         {

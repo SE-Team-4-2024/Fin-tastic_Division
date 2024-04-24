@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class HomeScene : MonoBehaviour
 {
@@ -11,14 +12,15 @@ public class HomeScene : MonoBehaviour
     [SerializeField] private GameObject hidingPanel;
     [SerializeField] private AudioClip clickSound, toggleSound;
 
+    [SerializeField] private GameObject newUserPanel;
+
     private AudioSource audioSource;
     private AudioController audioController; // Reference to AudioController
 
     // Global variables to store music and sound settings
     private bool isMusicOn;
     private bool isSoundOn;
-    private const string MUSIC_KEY = "MusicOn";
-    private const string SOUND_KEY = "SoundOn";
+    public TMP_InputField tmp_InputField;
 
     private void Start()
     {
@@ -31,14 +33,15 @@ public class HomeScene : MonoBehaviour
         musicButton.onClick.AddListener(ToggleMusic);
         soundButton.onClick.AddListener(ToggleSound);
         playButton.onClick.AddListener(OnPlayButtonClicked);
+        LoadUsersData();
 
         // Default 1 for the sound and setting to PlayerPrefs
-        if (!PlayerPrefs.HasKey(SOUND_KEY) || !PlayerPrefs.HasKey(MUSIC_KEY))
+        if (!PlayerPrefs.HasKey(UserManager.SOUND_KEY) || !PlayerPrefs.HasKey(UserManager.MUSIC_KEY))
         {
             isSoundOn = true; // If the sound setting key is not found, set it to true (on) by default
             isMusicOn  = true;
-            PlayerPrefs.SetInt(SOUND_KEY, isSoundOn ? 1 : 0);
-            PlayerPrefs.SetInt(MUSIC_KEY, isMusicOn ? 1 : 0);
+            PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
+            PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
             PlayerPrefs.Save();
         }
         else
@@ -74,6 +77,7 @@ public class HomeScene : MonoBehaviour
     {
         settingsPanel.SetActive(false);
         hidingPanel.SetActive(false);
+        UpdateUserInformation();
         PlayClickSound();
     }
 
@@ -96,7 +100,7 @@ public class HomeScene : MonoBehaviour
         isMusicOn = !isMusicOn; // Toggle the music state
 
         // Save the music setting to PlayerPrefs
-        PlayerPrefs.SetInt(MUSIC_KEY, isMusicOn ? 1 : 0);
+        PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
         PlayerPrefs.Save();
 
         PlayClickSound();
@@ -112,7 +116,7 @@ public class HomeScene : MonoBehaviour
         isSoundOn = !isSoundOn; // Toggle the sound state
 
         // Save the sound setting to PlayerPrefs
-        PlayerPrefs.SetInt(SOUND_KEY, isSoundOn ? 1 : 0);
+        PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
         PlayerPrefs.Save();
 
         PlayClickSound();
@@ -120,8 +124,66 @@ public class HomeScene : MonoBehaviour
 
     private void LoadSoundSettings()
     {
-        isMusicOn = PlayerPrefs.GetInt(MUSIC_KEY, 1) == 1; // Default is true
-        isSoundOn = PlayerPrefs.GetInt(SOUND_KEY, 1) == 1; // Default is true
+        isMusicOn = PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1; // Default is true
+        isSoundOn = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1; // Default is true
+    }
+
+    private void UpdateUserInformation(){
+        string inputText = tmp_InputField.text;
+
+        isMusicOn = PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1;
+        isSoundOn = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1;
+        string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
+        StartCoroutine(UpdateUserDetails(userID, inputText, "1", isMusicOn.ToString(), isSoundOn.ToString()));
+    }
+
+
+    private IEnumerator UpdateUserDetails(string userID, string name, string profilePicture, string isMusicEnabled, string isSoundEnabled)
+    {
+
+        Debug.Log("[Home Scene]Updating User Details for " + userID);
+        string deviceId = SystemInfo.deviceUniqueIdentifier;
+        yield return StartCoroutine(UserProfile.UpdateUserDetails(userID, name, profilePicture, isMusicEnabled, isSoundEnabled,
+            // onSuccess callback
+            (userId) =>
+            {
+                Debug.Log("[Details Updated]....");
+                Debug.Log(userId);
+
+                // Handle successful creation
+            },
+            // onError callback
+            (errorMessage) =>
+            {
+                Debug.LogError(errorMessage);
+                // Handle error
+            }
+        ));
+    }
+
+    private void LoadUsersData()
+    {
+        // Loading the list of users to get the userID, name , sound settings
+        UserManager userManagerInstance = FindObjectOfType<UserManager>();
+        if (userManagerInstance != null)
+        {
+            // Call the GetUsers method
+            User[] users = userManagerInstance.GetUsers();
+
+            Debug.Log("[Home Scene]  Users Length" + users.Length);
+
+            if (users == null || users.Length <= 0)
+            {
+                // No user found, to need to enforce new user addition
+                Debug.Log("[Home Scene] No users found, so redirecting to user creation panel");
+                newUserPanel.SetActive(true);
+            } else {
+                Debug.Log(UserManager.NAME_KEY);
+                Debug.Log(PlayerPrefs.GetString(UserManager.NAME_KEY));
+                tmp_InputField.text = PlayerPrefs.GetString(UserManager.NAME_KEY);
+                Debug.Log("Seeting Text Properly....");
+            }
+        }
     }
 
 }
