@@ -1,0 +1,144 @@
+# Android
+# Build your Android project with Gradle.
+# Add steps that test, sign, and distribute the APK, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/android
+
+parameters:
+  - name: BuildType
+    displayName: 'Select your build type'
+    default: debug
+    values:
+      - debug
+      - staging
+      - release
+
+  - name: OS
+    displayName: Operating System
+    type: string
+    default: macos-latest
+    values:
+      - windows-latest
+      - vs2017-win2016
+      - ubuntu-latest
+      - ubuntu-16.04
+      - macOS-latest
+      - macOS-10.14
+
+  - name: CurrentVersion
+    displayName: Enter the current version for this release
+    type: string
+    default: "1.0.1"
+
+trigger:
+  - development
+
+variables:
+  - name: 'apkFilePath'
+    value: '**/*$(BuildType)*.apk'
+
+stages:
+  - stage: Build
+    displayName: 'Building stage'
+    jobs:
+      - job: BuildAndroid
+        displayName: 'Android $(BuildType) build job'
+        pool:
+          vmImage: $(OS)
+
+        steps:
+          - task: PowerShell@2
+            displayName: 'Set codeName & codeVersion'
+            inputs:
+              targetType: 'inline'
+              script: |
+                $BasePath = "$(Build.SourcesDirectory)"
+                $BuildGradlePath = "${BasePath}app/build.gradle"
+                $BuildGradleUpdatedPath = "${BasePath}app/build.gradle.updated"
+                
+                $buildNumber = "$(Build.BuildNumber)".Replace('.', '')
+                $newVersionCode = $buildNumber.Substring(2)
+                
+                Get-Content $BuildGradlePath | ForEach-Object {
+                    if($_ -match "versionCode d"){
+                        $newLine = "        versionCode " + $newVersionCode
+                        Write-Output $newLine
+                    }
+                    elseif($_ -match "versionName"){
+                        $newLine = "        versionName '$(CurrentVersion)'"
+                        Write-Output $newLine
+                    }
+                    else {
+                        Write-Output $_
+                    }
+                } | Set-Content $BuildGradleUpdatedPath
+
+                Get-Content $BuildGradleUpdatedPath | Set-Content $BuildGradlePath
+
+          - task: Gradle@2
+            displayName: 'Building Project'
+            inputs:
+              workingDirectory: ''
+              gradleWrapperFile: 'gradlew'
+              gradleOptions: '-Xmx3072m'
+              tasks: 'assemble$(BuildType)'
+              publishJUnitResults: false
+              codeCoverageToolOption: 'None'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: 'default'
+              jdkArchitectureOption: 'x64'
+              checkStyleRunAnalysis: false
+              findBugsRunAnalysis: false
+
+          - task: AndroidSigning@3
+            displayName: 'Android Signing'
+            inputs:
+              apkFiles: $(apkFilePath)
+              apksign: true
+              apksignerKeystoreFile: '$(BuildType).jks'
+              apksignerKeystorePassword: $(apksignerKeystorePassword)
+              apksignerKeystoreAlias: $(apksignerKeystoreAlias)
+              apksignerKeyPassword: $(apksignerKeyPassword)
+              apksignerArguments: '--verbose'
+              zipalign: false
+
+          - task: CopyFiles@2
+            displayName: 'Copying APK files'
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)'
+              Contents: $(apkFilePath)
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publishing Artifacts'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: '$(BuildType)'
+
+  - stage: Distribute
+    displayName: 'Distribution stage'
+    jobs:
+      - job: DistributeAndroid
+        displayName: 'Android $(BuildType) distribute job'
+        pool:
+          vmImage: $(OS)
+
+        steps:
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Downloading Published artifacts'
+            inputs:
+              buildType: 'current'
+              downloadType: 'specific'
+              itemPattern: '**/*$(BuildType)*.apk'
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+          - task: AppCenterDistribute@3
+            displayName: 'Distributing $(BuildType) build'
+            condition: eq(variables['BuildType'], 'release')
+            inputs:
+              serverEndpoint: 'MyAppCenterConnection'
+              appSlug: '$(appSlug)'
+              appFile: '$(System.ArtifactsDirectory)/$(BuildType)/app/$(BuildType)/*$(BuildType)*.apk'
+              releaseNotesOption: 'input'
+              releaseNotesInput: '$(Build.SourceVersionMessage)'
+              destinationType: 'groups'
+              distributionGroupId: '$(androidStagingTestersGroup)'
