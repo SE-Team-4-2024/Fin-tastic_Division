@@ -38,6 +38,11 @@ public class AudioController : MonoBehaviour
         }
     }
 
+
+    public bool isBgMusicPlaying(){
+        return backgroundMusic.isPlaying;
+    }
+
     public void PlayPanelSoundAndResumeBackgroundMusic()
     {
         backgroundMusic.Pause();

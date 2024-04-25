@@ -120,7 +120,6 @@ public class HomeScene : MonoBehaviour
         isSoundOn = !isSoundOn; // Toggle the sound state
 
         // Save the sound setting to PlayerPrefs
-        Debug.Log(isSoundOn + "Sound Enabled");
         PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
         PlayerPrefs.Save();
 
@@ -144,9 +143,16 @@ public class HomeScene : MonoBehaviour
     {
         isMusicOn = PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1; // Default is true
         isSoundOn = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1; // Default is true
-         // Toggle background music
-        if(isMusicOn == false && PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 0)
+
+
+
+        if (isMusicOn && PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1 && !audioController.isBgMusicPlaying())
         {
+            audioController.ToggleBackgroundMusic();
+        }
+
+
+        if (!isMusicOn && PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 0 && audioController.isBgMusicPlaying()){
             audioController.ToggleBackgroundMusic();
         }
         UpdateMusicButtonImage();
