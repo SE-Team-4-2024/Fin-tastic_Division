@@ -2463,6 +2463,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 36866430}
+  - {fileID: 1329731727}
   m_Father: {fileID: 1404385771}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -4932,6 +4933,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newUserAdditionPanel: {fileID: 192260103}
+  musicOnSprite: {fileID: 21300000, guid: 5a1969db75878418085c558112b51d98, type: 3}
+  musicOffSprite: {fileID: 21300000, guid: 92e64e901d3d44c598e86e45e9528f5b, type: 3}
+  soundOnSprite: {fileID: 21300000, guid: f04bec72025b54b9bafd2ee78c5e930b, type: 3}
+  soundOffSprite: {fileID: 21300000, guid: ec3f713465c254e60b4e78b19f49cf0a, type: 3}
   createButton: {fileID: 573666253}
   musicButton: {fileID: 582956969}
   soundButton: {fileID: 509038617}

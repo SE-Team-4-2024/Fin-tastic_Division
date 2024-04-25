@@ -8,6 +8,9 @@ using TMPro;
 public class NewUserCreationHandler : MonoBehaviour
 {
     public GameObject newUserAdditionPanel; // Panel on which the new user is created.
+
+    [SerializeField] private Sprite musicOnSprite, musicOffSprite; // Add images for music off states
+    [SerializeField] private Sprite soundOnSprite, soundOffSprite; // Add images for sound off states
     [SerializeField] private Button createButton;
     private InputField[] inputFields; // Array to store references to input fields
    [SerializeField] private Button musicButton, soundButton;
@@ -19,8 +22,8 @@ public class NewUserCreationHandler : MonoBehaviour
     private AudioController audioController; // Reference to AudioController
 
     // Global variables to store music and sound settings
-    private bool isMusicOn = true;
-    private bool isSoundOn = true;
+    private bool isMusicOn;
+    private bool isSoundOn;
 
 
     private void Start()
@@ -33,6 +36,15 @@ public class NewUserCreationHandler : MonoBehaviour
         musicButton.onClick.AddListener(ToggleMusic);
         soundButton.onClick.AddListener(ToggleSound);
         createButton.onClick.AddListener(OnCreateButtonClick);
+
+        isSoundOn = true; // If the sound setting key is not found, set it to true (on) by default
+        isMusicOn = true;
+        PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
+        PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
+        PlayerPrefs.Save();
+
+        UpdateMusicButtonImage();
+        UpdateSoundButtonImage();
     }
 
     public void OnCreateButtonClick()
@@ -42,7 +54,7 @@ public class NewUserCreationHandler : MonoBehaviour
         int profilePicture =  userManagerInstance.GetImage();
         bool isMusicEnabled = PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1;
         bool isSoundEnabled = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1;
-        StartCoroutine(GetorCreateUser(name, profilePicture.ToString(), isMusicEnabled.ToString(), isSoundEnabled.ToString()));
+        StartCoroutine(GetorCreateUser(name, profilePicture, isMusicEnabled, isSoundEnabled));
     }
 
     private void PlayClickSound()
@@ -58,13 +70,22 @@ public class NewUserCreationHandler : MonoBehaviour
         }
     }
 
+    private void UpdateMusicButtonImage()
+    {
+        musicButton.image.sprite = isMusicOn ? musicOnSprite : musicOffSprite;
+    }
+
+   private void UpdateSoundButtonImage()
+    {
+        soundButton.image.sprite = isSoundOn ? soundOnSprite : soundOffSprite;
+    }
+
     private void ToggleMusic()
     {
         audioSource.PlayOneShot(toggleSound);
         isMusicOn = !isMusicOn; // Toggle the music state
 
         // Save the music setting to PlayerPrefs
-        Debug.Log(isMusicOn + "Music On..")
         PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
         PlayerPrefs.Save();
 
@@ -72,6 +93,8 @@ public class NewUserCreationHandler : MonoBehaviour
 
         // Toggle background music
         audioController.ToggleBackgroundMusic();
+        UpdateMusicButtonImage();
+
     }
 
     private void ToggleSound()
@@ -85,21 +108,60 @@ public class NewUserCreationHandler : MonoBehaviour
         PlayerPrefs.Save();
 
         PlayClickSound();
+        UpdateSoundButtonImage();
+    }
+
+    private void UploadDetailsForSettingsPanel(string name, int profilePicture, bool isMusicEnabled, bool isSoundEnabled){
+        tmp_InputField.text = name; // Loading the name for settings scene
+        GameObject otherGameObject = GameObject.Find("SettingsPanel");
+        Transform imageTransform = otherGameObject.transform.Find("Profile");
+        Image imageComponent = imageTransform.GetComponent<Image>();
+
+
+        // Check if the Image component exists
+        if (imageComponent == null)
+        {
+            Debug.LogError("Image component not found on the GameObject!");
+            return;
+        }
+
+        UserManager userManagerInstance = FindObjectOfType<UserManager>();
+        string imageName = userManagerInstance.GetImageName(profilePicture);
+
+        // Load the sprite from the Resources folder
+        Sprite newSprite = Resources.Load<Sprite>(imageName);
+
+        // Check if the sprite was successfully loaded
+        if (newSprite != null)
+        {
+            // Update the sprite of the Image component
+            imageComponent.sprite = newSprite;
+        }
+        else
+        {
+            Debug.LogError("Sprite not found at path: " + imageName);
+        }
+
+        isMusicOn = isMusicEnabled;
+        isSoundOn = isSoundEnabled;
+        UpdateSoundButtonImage();
+        UpdateMusicButtonImage();
     }
 
 
-    private IEnumerator GetorCreateUser(string name, string profilePicture, string isMusicEnabled, string isSoundEnabled)
+    private IEnumerator GetorCreateUser(string name, int profilePicture, bool isMusicEnabled, bool isSoundEnabled)
     {
         string deviceId = SystemInfo.deviceUniqueIdentifier;
         Debug.Log("[New User Creation Handler] Creating New User For " + name + " " + deviceId);
-        yield return StartCoroutine(UserProfile.GetorCreateUser(deviceId, name, profilePicture, isMusicEnabled, isSoundEnabled,
+        yield return StartCoroutine(UserProfile.GetorCreateUser(deviceId, name, profilePicture.ToString(), isMusicEnabled.ToString(), isSoundEnabled.ToString(),
             // onSuccess callback
             (userId) =>
             {   // Saving the name and user id , if api is successful.
                 PlayerPrefs.SetString(UserManager.USERID_KEY, userId);
                 PlayerPrefs.SetString(UserManager.NAME_KEY, name);
-                tmp_InputField.text = name; // Loading the name for settings scene
-                PlayerPrefs.Save();
+                PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundEnabled ? 1 : 0);
+                PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicEnabled ? 1 : 0);
+                UploadDetailsForSettingsPanel(name, profilePicture, isMusicEnabled, isSoundEnabled);
                 Debug.Log("[New User Creation Handler] User Id "+ userId);
                 newUserAdditionPanel.SetActive(false); // Once passes, the panel is not needed
             },
@@ -110,6 +172,4 @@ public class NewUserCreationHandler : MonoBehaviour
             }
         ));
     }
-
-
 }
