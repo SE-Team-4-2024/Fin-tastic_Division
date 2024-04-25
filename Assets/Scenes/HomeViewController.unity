@@ -4942,6 +4942,7 @@ MonoBehaviour:
   soundButton: {fileID: 509038617}
   clickSound: {fileID: 8300000, guid: 37fc5a81db1f40d42abeb201a8dcbe12, type: 3}
   toggleSound: {fileID: 8300000, guid: 6d1ba80539b7de24084f86b663d36fe8, type: 3}
+  settingsPanel: {fileID: 1404385770}
   tmp_InputField: {fileID: 888312547}
 --- !u!1 &1241417151
 GameObject:
@@ -5583,7 +5584,7 @@ GameObject:
   - component: {fileID: 1404385774}
   m_Layer: 5
   m_Name: SettingsPanel
-  m_TagString: Untagged
+  m_TagString: SettingsPanel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

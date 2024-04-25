@@ -16,6 +16,8 @@ public class NewUserCreationHandler : MonoBehaviour
    [SerializeField] private Button musicButton, soundButton;
     [SerializeField] private AudioClip clickSound, toggleSound;
 
+    [SerializeField] private GameObject settingsPanel;
+
     public TMP_InputField tmp_InputField;
 
     private AudioSource audioSource;
@@ -112,9 +114,11 @@ public class NewUserCreationHandler : MonoBehaviour
     }
 
     private void UploadDetailsForSettingsPanel(string name, int profilePicture, bool isMusicEnabled, bool isSoundEnabled){
+        settingsPanel.SetActive(true);
         tmp_InputField.text = name; // Loading the name for settings scene
-        GameObject otherGameObject = GameObject.Find("SettingsPanel");
+        GameObject otherGameObject = GameObject.FindWithTag("SettingsPanel");
         Transform imageTransform = otherGameObject.transform.Find("Profile");
+
         Image imageComponent = imageTransform.GetComponent<Image>();
 
 
@@ -124,8 +128,10 @@ public class NewUserCreationHandler : MonoBehaviour
             Debug.LogError("Image component not found on the GameObject!");
             return;
         }
+         Debug.Log("image Found");
 
         UserManager userManagerInstance = FindObjectOfType<UserManager>();
+         Debug.Log("instance panel");
         string imageName = userManagerInstance.GetImageName(profilePicture);
 
         // Load the sprite from the Resources folder
@@ -164,6 +170,7 @@ public class NewUserCreationHandler : MonoBehaviour
                 UploadDetailsForSettingsPanel(name, profilePicture, isMusicEnabled, isSoundEnabled);
                 Debug.Log("[New User Creation Handler] User Id "+ userId);
                 newUserAdditionPanel.SetActive(false); // Once passes, the panel is not needed
+                settingsPanel.SetActive(false);
             },
             // onError callback
             (errorMessage) =>

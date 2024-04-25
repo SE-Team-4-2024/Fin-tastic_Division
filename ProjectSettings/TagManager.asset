@@ -6,6 +6,7 @@ TagManager:
   tags:
   - prefabTag
   - spawnedPrefabTag
+  - SettingsPanel
   layers:
   - Default
   - TransparentFX
