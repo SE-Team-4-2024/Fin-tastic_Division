@@ -15,7 +15,7 @@ parameters:
   - name: OS
     displayName: Operating System
     type: string
-    default: macos-latest
+    default: windows-latest
     values:
       - windows-latest
       - vs2017-win2016
