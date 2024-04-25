@@ -15,6 +15,8 @@ public class HomeScene : MonoBehaviour
     [SerializeField] private GameObject newUserPanel;
 
     private AudioSource audioSource;
+
+    private UserManager userManagerInstance;
     private AudioController audioController; // Reference to AudioController
 
     // Global variables to store music and sound settings
@@ -116,6 +118,7 @@ public class HomeScene : MonoBehaviour
         isSoundOn = !isSoundOn; // Toggle the sound state
 
         // Save the sound setting to PlayerPrefs
+        Debug.Log(isSoundOn + "Sound Enabled");
         PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
         PlayerPrefs.Save();
 
@@ -129,28 +132,29 @@ public class HomeScene : MonoBehaviour
     }
 
     private void UpdateUserInformation(){
-        string inputText = tmp_InputField.text;
-
+        string name = tmp_InputField.text;
+        userManagerInstance = FindObjectOfType<UserManager>();
+        int image = userManagerInstance.GetImage();
+        // Updating image here, as he can select image, but could wish to opt out of it
+        PlayerPrefs.SetInt(UserManager.IMAGE_KEY, image);
+        PlayerPrefs.Save();
         isMusicOn = PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1;
         isSoundOn = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1;
         string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
-        StartCoroutine(UpdateUserDetails(userID, inputText, "1", isMusicOn.ToString(), isSoundOn.ToString()));
+        StartCoroutine(UpdateUserDetails(userID, name, image.ToString(), isMusicOn.ToString(), isSoundOn.ToString()));
     }
 
 
     private IEnumerator UpdateUserDetails(string userID, string name, string profilePicture, string isMusicEnabled, string isSoundEnabled)
     {
-
         Debug.Log("[Home Scene]Updating User Details for " + userID);
         string deviceId = SystemInfo.deviceUniqueIdentifier;
         yield return StartCoroutine(UserProfile.UpdateUserDetails(userID, name, profilePicture, isMusicEnabled, isSoundEnabled,
             // onSuccess callback
             (userId) =>
             {
-                Debug.Log("[Details Updated]....");
-                Debug.Log(userId);
+                
 
-                // Handle successful creation
             },
             // onError callback
             (errorMessage) =>
@@ -164,7 +168,7 @@ public class HomeScene : MonoBehaviour
     private void LoadUsersData()
     {
         // Loading the list of users to get the userID, name , sound settings
-        UserManager userManagerInstance = FindObjectOfType<UserManager>();
+        userManagerInstance = FindObjectOfType<UserManager>();
         if (userManagerInstance != null)
         {
             // Call the GetUsers method
@@ -181,7 +185,6 @@ public class HomeScene : MonoBehaviour
                 Debug.Log(UserManager.NAME_KEY);
                 Debug.Log(PlayerPrefs.GetString(UserManager.NAME_KEY));
                 tmp_InputField.text = PlayerPrefs.GetString(UserManager.NAME_KEY);
-                Debug.Log("Seeting Text Properly....");
             }
         }
     }
