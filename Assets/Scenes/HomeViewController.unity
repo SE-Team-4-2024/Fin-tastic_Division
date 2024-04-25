@@ -750,81 +750,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &84413463
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 84413464}
-  - component: {fileID: 84413466}
-  - component: {fileID: 84413465}
-  m_Layer: 5
-  m_Name: Icon
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &84413464
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 84413463}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.79668, y: 0.79668, z: 0.79668}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 960585657}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.9228, y: -2.5509}
-  m_SizeDelta: {x: 96.1545, y: 94.8896}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &84413465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 84413463}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cd72311f1180af14db04c6aba447b34c, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &84413466
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 84413463}
-  m_CullTransparentMesh: 1
 --- !u!1 &105650321
 GameObject:
   m_ObjectHideFlags: 0
@@ -2538,7 +2463,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 36866430}
-  - {fileID: 1329731727}
   m_Father: {fileID: 1404385771}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2622,8 +2546,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 271cc170caa51d7469f91eeb6dfa82aa, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: f04bec72025b54b9bafd2ee78c5e930b, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3789,7 +3713,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 325522603}
-  - {fileID: 84413464}
   m_Father: {fileID: 1404385771}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3873,8 +3796,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 271cc170caa51d7469f91eeb6dfa82aa, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 5a1969db75878418085c558112b51d98, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -4866,6 +4789,10 @@ MonoBehaviour:
   musicButton: {fileID: 960585658}
   soundButton: {fileID: 576789949}
   playButton: {fileID: 1502877557}
+  musicOnSprite: {fileID: 21300000, guid: 5a1969db75878418085c558112b51d98, type: 3}
+  musicOffSprite: {fileID: 21300000, guid: 92e64e901d3d44c598e86e45e9528f5b, type: 3}
+  soundOnSprite: {fileID: 21300000, guid: f04bec72025b54b9bafd2ee78c5e930b, type: 3}
+  soundOffSprite: {fileID: 21300000, guid: ec3f713465c254e60b4e78b19f49cf0a, type: 3}
   settingsPanel: {fileID: 1404385770}
   hidingPanel: {fileID: 1285208156}
   clickSound: {fileID: 8300000, guid: 37fc5a81db1f40d42abeb201a8dcbe12, type: 3}

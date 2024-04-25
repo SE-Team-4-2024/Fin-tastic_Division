@@ -29,10 +29,12 @@ public class AudioController : MonoBehaviour
         {
             //Destroy(gameObject);
             backgroundMusic.Pause();
+            Debug.Log("isPlaying=true");
         }
         else
         {
             backgroundMusic.Play();
+            Debug.Log("isPlaying=false");
         }
     }
 

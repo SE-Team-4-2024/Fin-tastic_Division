@@ -8,6 +8,8 @@ using TMPro;
 public class HomeScene : MonoBehaviour
 {
     [SerializeField] private Button okayButton, settingsButton, closeButton, musicButton, soundButton, playButton;
+    [SerializeField] private Sprite musicOnSprite, musicOffSprite; // Add images for music off states
+    [SerializeField] private Sprite soundOnSprite, soundOffSprite; // Add images for sound off states
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject hidingPanel;
     [SerializeField] private AudioClip clickSound, toggleSound;
@@ -46,7 +48,7 @@ public class HomeScene : MonoBehaviour
             PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
             PlayerPrefs.Save();
         }
-        else
+        else 
         {
             LoadSoundSettings();
         }
@@ -106,8 +108,8 @@ public class HomeScene : MonoBehaviour
         PlayerPrefs.Save();
 
         PlayClickSound();
-
-        // Toggle background music
+        // Update the music button image
+        UpdateMusicButtonImage();
         audioController.ToggleBackgroundMusic();
     }
 
@@ -123,12 +125,32 @@ public class HomeScene : MonoBehaviour
         PlayerPrefs.Save();
 
         PlayClickSound();
+
+        // Update the sound button image
+        UpdateSoundButtonImage();
+    }
+
+    private void UpdateMusicButtonImage()
+    {
+        musicButton.image.sprite = isMusicOn ? musicOnSprite : musicOffSprite;
+    }
+
+   private void UpdateSoundButtonImage()
+    {
+        soundButton.image.sprite = isSoundOn ? soundOnSprite : soundOffSprite;
     }
 
     private void LoadSoundSettings()
     {
         isMusicOn = PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1; // Default is true
         isSoundOn = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1; // Default is true
+         // Toggle background music
+        if(isMusicOn == false && PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 0)
+        {
+            audioController.ToggleBackgroundMusic();
+        }
+        UpdateMusicButtonImage();
+        UpdateSoundButtonImage();
     }
 
     private void UpdateUserInformation(){
