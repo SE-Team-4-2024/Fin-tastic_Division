@@ -23,24 +23,18 @@ public class AudioController : MonoBehaviour
         backgroundMusic.loop = true;  // Set background music to loop
     }
 
-    public void ToggleBackgroundMusic()
+    public void ToggleBackgroundMusic(bool isMusicOn)
     {
-        if (backgroundMusic.isPlaying)
+        if (isMusicOn)
         {
-            //Destroy(gameObject);
-            backgroundMusic.Pause();
-            Debug.Log("isPlaying=true");
+            backgroundMusic.Play();
+            Debug.Log("Background music is playing.");
         }
         else
         {
-            backgroundMusic.Play();
-            Debug.Log("isPlaying=false");
+            backgroundMusic.Pause();
+            Debug.Log("Background music is paused.");
         }
-    }
-
-
-    public bool isBgMusicPlaying(){
-        return backgroundMusic.isPlaying;
     }
 
     public void PlayPanelSoundAndResumeBackgroundMusic()
@@ -54,5 +48,10 @@ public class AudioController : MonoBehaviour
         backgroundMusic.PlayOneShot(clip);
         yield return new WaitForSeconds(clip.length);
         //backgroundMusic.Resume();  // Resume background music after panel sound
+    }
+
+    public void ResumeBackgroundMusic()
+    {
+        backgroundMusic.UnPause();
     }
 }

@@ -94,7 +94,7 @@ public class NewUserCreationHandler : MonoBehaviour
         PlayClickSound();
 
         // Toggle background music
-        audioController.ToggleBackgroundMusic();
+        audioController.ToggleBackgroundMusic(isMusicOn);
         UpdateMusicButtonImage();
 
     }

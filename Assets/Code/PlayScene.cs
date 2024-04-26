@@ -70,6 +70,7 @@ public class PlayScene : MonoBehaviour
         CreateNewGame(); // To create a new game to store in database
         startTime = Time.time; // Track the start time when the game starts
         LoadNextProblem(); // Start loading the first problem
+        Debug.Log("------------START---------------------");
     }
 
     public void PlayClickSound()
@@ -694,7 +695,7 @@ public class PlayScene : MonoBehaviour
         {
             LoadNextProblem();
         }
-        else
+        else if (!pauseMenuPanel.activeSelf)
         {
             CompleteGame();
         }
@@ -705,6 +706,7 @@ public class PlayScene : MonoBehaviour
 
     void CompleteGame()
     {
+        pauseMenuPanel.SetActive(false);
         hidingPanel.SetActive(true);
         completeGamePanel.SetActive(true);
         endTime = Time.time; // Track the end time when the game completes
@@ -736,7 +738,6 @@ public class PlayScene : MonoBehaviour
 
     void PauseGame()
     {
-
         hidingPanel.SetActive(true);
         pauseMenuPanel.SetActive(true);
         DisableGameInputs();
@@ -744,9 +745,17 @@ public class PlayScene : MonoBehaviour
 
     void ResumeGame()
     {
-        hidingPanel.SetActive(false);
-        pauseMenuPanel.SetActive(false);
-        EnableGameInputs();
+        if (currentQuestionIndex == totalQuestions)
+        {
+            // If the game has been completed, show the complete panel
+            CompleteGame();
+        }
+        else
+        {
+            hidingPanel.SetActive(false);
+            pauseMenuPanel.SetActive(false);
+            EnableGameInputs();
+        }
     }
 
     void BackToMainMenu()
@@ -765,6 +774,10 @@ public class PlayScene : MonoBehaviour
 
     void RestartGame()
     {
+        completeGamePanel.SetActive(false);
+        hidingPanel.SetActive(false);
+        pauseMenuPanel.SetActive(false);
+        EnableGameInputs();
         currentQuestionIndex = 0;
         correctlyAnswered = 0;
         ResumeGame();
@@ -778,6 +791,7 @@ public class PlayScene : MonoBehaviour
         {
             button.gameObject.transform.SetParent(pauseMenuPanel.transform);
             button.interactable = false;
+            button.gameObject.SetActive(false);
         }
 
         // Hide the denominator bars and fishes inside them
@@ -803,6 +817,7 @@ public class PlayScene : MonoBehaviour
         {
             button.gameObject.transform.SetParent(transform);
             button.interactable = true;
+            button.gameObject.SetActive(true);
         }
 
         // Show the denominator bars and fishes inside them
@@ -825,6 +840,7 @@ public class PlayScene : MonoBehaviour
     {
         currentQuestionIndex = 0;
         correctlyAnswered = 0;
+        pauseMenuPanel.SetActive(false);
         completeGamePanel.SetActive(false);
         pauseButton.interactable = true;
         hidingPanel.SetActive(false);

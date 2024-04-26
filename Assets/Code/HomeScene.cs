@@ -47,10 +47,12 @@ public class HomeScene : MonoBehaviour
             PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
             PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
             PlayerPrefs.Save();
+            Debug.Log("Players");
         }
         else 
         {
             LoadSoundSettings();
+            Debug.Log("LoadSoundSettings");
         }
     }
 
@@ -110,7 +112,7 @@ public class HomeScene : MonoBehaviour
         PlayClickSound();
         // Update the music button image
         UpdateMusicButtonImage();
-        audioController.ToggleBackgroundMusic();
+        audioController.ToggleBackgroundMusic(isMusicOn);
     }
 
     private void ToggleSound()
@@ -143,18 +145,9 @@ public class HomeScene : MonoBehaviour
     {
         isMusicOn = PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1; // Default is true
         isSoundOn = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1; // Default is true
-
-
-
-        if (isMusicOn && PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 1 && !audioController.isBgMusicPlaying())
-        {
-            audioController.ToggleBackgroundMusic();
-        }
-
-
-        if (!isMusicOn && PlayerPrefs.GetInt(UserManager.MUSIC_KEY, 1) == 0 && audioController.isBgMusicPlaying()){
-            audioController.ToggleBackgroundMusic();
-        }
+        Debug.Log("music" + isMusicOn);
+        Debug.Log("sound" + isSoundOn);
+        audioController.ToggleBackgroundMusic(isMusicOn);
         UpdateMusicButtonImage();
         UpdateSoundButtonImage();
     }

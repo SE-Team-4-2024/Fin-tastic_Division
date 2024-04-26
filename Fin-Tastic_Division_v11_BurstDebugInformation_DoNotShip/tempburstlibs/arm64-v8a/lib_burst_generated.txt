@@ -1,7 +1,7 @@
-Library: /Users/008460108/Desktop/AzureRepo-SEC/Fin-tastic_Division/Temp/BurstOutput/tempburstlibs/armeabi-v7a/lib_burst_generated
+Library: /Users/008460108/Desktop/AzureRepo-SEC/Fin-tastic_Division/Temp/BurstOutput/tempburstlibs/arm64-v8a/lib_burst_generated
 --platform=Android
 --backend=burst-llvm-16
---target=ARMV7A_NEON32
+--target=ARMV8A_AARCH64
 --global-safety-checks-setting=Off
 --meta-data-generation=False
 --dump=Function
@@ -54,7 +54,7 @@ Library: /Users/008460108/Desktop/AzureRepo-SEC/Fin-tastic_Division/Temp/BurstOu
 --temp-folder=/Users/008460108/Desktop/AzureRepo-SEC/Fin-tastic_Division/Temp/Burst
 --key-folder=/Users/008460108/NEW_USER/2022.3.21f1-x86_64/PlaybackEngines/AndroidPlayer
 --decode-folder=/Users/008460108/Desktop/AzureRepo-SEC/Fin-tastic_Division/Library/Burst
---output=/Users/008460108/Desktop/AzureRepo-SEC/Fin-tastic_Division/Temp/BurstOutput/tempburstlibs/armeabi-v7a/lib_burst_generated
+--output=/Users/008460108/Desktop/AzureRepo-SEC/Fin-tastic_Division/Temp/BurstOutput/tempburstlibs/arm64-v8a/lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/
 
 --method=Unity.Burst.BurstCompiler+BurstCompilerHelper, Unity.Burst, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::IsBurstEnabled()--8c2be93e18276203cbd918daa2748a10
