@@ -1,0 +1,15 @@
+{
+    "name": "org.nuget.bubblescript",
+    "version": "1.0.1",
+    "displayName": "BubbleScript",
+    "description": "Package Description",
+    "unity": "2018.3",
+    "keywords": [
+        ""
+    ],
+    "author": {
+        "name": "HemanthKiranReddyPolu",
+        "email": "",
+        "url": ""
+    }
+}
