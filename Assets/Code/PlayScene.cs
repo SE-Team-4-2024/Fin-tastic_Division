@@ -41,8 +41,10 @@ public class PlayScene : MonoBehaviour
     private List<RectTransform> denominatorBarPanels = new List<RectTransform>(); // List to store references to denominator bar panels
     // Declare a list to keep track of instantiated fish objects
     private List<GameObject> instantiatedFishes = new List<GameObject>();
+    float originalTimeScale;
     void Start()
     {
+        originalTimeScale = Time.timeScale; //Store the original time scale
         // Ensure that both fish animations are initially inactive
         happyFishAnim.SetActive(false);
         sadFishAnim.SetActive(false);
@@ -741,10 +743,12 @@ public class PlayScene : MonoBehaviour
         hidingPanel.SetActive(true);
         pauseMenuPanel.SetActive(true);
         DisableGameInputs();
+        Time.timeScale = 0; //Freeze the game
     }
 
     void ResumeGame()
     {
+        Time.timeScale = originalTimeScale; // Unfreeze the game
         if (currentQuestionIndex == totalQuestions)
         {
             // If the game has been completed, show the complete panel
@@ -760,8 +764,8 @@ public class PlayScene : MonoBehaviour
 
     void BackToMainMenu()
     {
+        Time.timeScale = originalTimeScale; // Unfreeze the game
         PlayClickSound(); // Play the click sound first
-                               // Use a delay to ensure the sound plays before transitioning
         StartCoroutine(DelayBeforeMainMenuTransition());
     }
 
@@ -774,6 +778,7 @@ public class PlayScene : MonoBehaviour
 
     void RestartGame()
     {
+        Time.timeScale = originalTimeScale; // Unfreeze the game
         completeGamePanel.SetActive(false);
         hidingPanel.SetActive(false);
         pauseMenuPanel.SetActive(false);
@@ -838,6 +843,7 @@ public class PlayScene : MonoBehaviour
 
     void PlayAgainButton()
     {
+        Time.timeScale = originalTimeScale; // Unfreeze the game
         currentQuestionIndex = 0;
         correctlyAnswered = 0;
         pauseMenuPanel.SetActive(false);
