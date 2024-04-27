@@ -17,6 +17,7 @@ public class NewUserCreationHandler : MonoBehaviour
     [SerializeField] private AudioClip clickSound, toggleSound;
 
     [SerializeField] private GameObject settingsPanel;
+    private UserManager userManagerInstance;
 
     public TMP_InputField tmp_InputField;
 
@@ -33,20 +34,49 @@ public class NewUserCreationHandler : MonoBehaviour
 
         // Find the AudioController in the scene
         audioSource = GetComponent<AudioSource>();
-        audioController = FindObjectOfType<AudioController>(); 
+        audioController = FindObjectOfType<AudioController>();
         inputFields = newUserAdditionPanel.GetComponentsInChildren<InputField>();
         musicButton.onClick.AddListener(ToggleMusic);
         soundButton.onClick.AddListener(ToggleSound);
         createButton.onClick.AddListener(OnCreateButtonClick);
 
-        isSoundOn = true; // If the sound setting key is not found, set it to true (on) by default
-        isMusicOn = true;
-        PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
-        PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
-        PlayerPrefs.Save();
 
-        UpdateMusicButtonImage();
-        UpdateSoundButtonImage();
+        if (LoadUsersData())
+        {
+            isSoundOn = true; // If the sound setting key is not found, set it to true (on) by default
+            isMusicOn = true;
+            PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
+            PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
+            PlayerPrefs.Save();
+            UpdateMusicButtonImage();
+            UpdateSoundButtonImage();
+        }
+
+        
+    }
+
+
+    private bool LoadUsersData()
+    {
+        // Loading the list of users to get the userID, name , sound settings
+        userManagerInstance = FindObjectOfType<UserManager>();
+        if (userManagerInstance != null)
+        {
+            // Call the GetUsers method
+            User[] users = userManagerInstance.GetUsers();
+
+            Debug.Log("[New User]  Users Length" + users.Length);
+
+            if (users == null || users.Length <= 0)
+            {
+                // No user found, to need to enforce new user addition
+                Debug.Log("[Home Scene] No users found, so redirecting to user creation panel");
+                return true;
+            } 
+
+            return false;
+        }
+        return true;
     }
 
     public void OnCreateButtonClick()

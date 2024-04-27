@@ -47,7 +47,6 @@ public class HomeScene : MonoBehaviour
             PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
             PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
             PlayerPrefs.Save();
-            Debug.Log("Players");
         }
         else 
         {
