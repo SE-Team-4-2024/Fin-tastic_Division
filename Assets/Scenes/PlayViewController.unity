@@ -2164,11 +2164,11 @@ RectTransform:
   - {fileID: 1871980489}
   - {fileID: 199319071}
   - {fileID: 1462062245}
+  - {fileID: 860040583}
+  - {fileID: 1631855492}
   - {fileID: 325553378}
   - {fileID: 1742427460}
   - {fileID: 1844340034}
-  - {fileID: 860040583}
-  - {fileID: 1631855492}
   m_Father: {fileID: 1364283080}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
