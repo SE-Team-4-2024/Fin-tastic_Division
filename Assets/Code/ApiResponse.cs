@@ -16,4 +16,6 @@ public class ApiResponseContent
 {
     // ApiResponseContent contains an array of users and a Content property
     public User[] users; // Assuming User is another class representing user data
+
+    public Game[] games;
 }
