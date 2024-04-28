@@ -797,6 +797,7 @@ public class PlayScene : MonoBehaviour
         currentQuestionIndex = 0;
         correctlyAnswered = 0;
         ResumeGame();
+        CreateNewGame();
         LoadNextProblem();
     }
 
