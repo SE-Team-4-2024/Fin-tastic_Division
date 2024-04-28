@@ -898,7 +898,7 @@ public class PlayScene : MonoBehaviour
             // Set font size for the new text box
             TextMeshProUGUI textComponent = newTextBox.GetComponent<TextMeshProUGUI>();
             textComponent.fontSize = fontSize;
-            textComponent.text = "Score: " + fetchedGames[i].noOfCorrectAnswers.ToString() + "/" + totalQuestions.ToString();
+            textComponent.text = "Score: " + fetchedGames[i].noOfCorrectAnswers.ToString() + "/" +  totalQuestions.ToString();
 
             // Calculate position for the new text box
             float newY = prefabPosition.y - ((i + 1) * (textBoxHeight + verticalSpacing)); // Adding 1 to i because we want the new boxes to be below the prefab
