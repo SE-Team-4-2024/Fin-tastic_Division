@@ -18,6 +18,7 @@ public class PlayScene : MonoBehaviour
    
     public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton, historyButton, closeButtonPrev;
     public GameObject fishPrefab;
+    private Game[] fetchedGames; 
 
     public VoiceScript voiceScript;
 
@@ -39,6 +40,8 @@ public class PlayScene : MonoBehaviour
     private bool isAnimating = false;
     private bool isSoundOn;
     private AudioController audioController; // Reference to AudioController
+
+
 
     private List<RectTransform> denominatorBarPanels = new List<RectTransform>(); // List to store references to denominator bar panels
     // Declare a list to keep track of instantiated fish objects
@@ -79,6 +82,7 @@ public class PlayScene : MonoBehaviour
         LoadNextProblem(); // Start loading the first problem
         Debug.Log("------------START---------------------");
     }
+
 
     public void PlayClickSound()
     {
@@ -728,6 +732,7 @@ public class PlayScene : MonoBehaviour
         accuracyText.text = "Accuracy:" + $"{accuracy}%";
         wrongText.text = "Wrong:" + (totalQuestions - correctlyAnswered);
         StartCoroutine(UpdateGameCompletionStats(accuracy, rate));
+        StartCoroutine(FetchGameStats());
         DisableGameInputs();
     }
 
@@ -885,7 +890,7 @@ public class PlayScene : MonoBehaviour
         float fontSize = textBoxPrefab.GetComponent<TextMeshProUGUI>().fontSize;
 
         // Loop through the number of rows
-        for (int i = 0; i < numberOfRecords; i++)
+        for (int i = 0; i < fetchedGames.Length; i++)
         {
             // Instantiate a new text box prefab
             GameObject newTextBox = Instantiate(textBoxPrefab, transform);
@@ -893,6 +898,7 @@ public class PlayScene : MonoBehaviour
             // Set font size for the new text box
             TextMeshProUGUI textComponent = newTextBox.GetComponent<TextMeshProUGUI>();
             textComponent.fontSize = fontSize;
+            textComponent.text = "Score: " + fetchedGames[i].noOfCorrectAnswers.ToString();
 
             // Calculate position for the new text box
             float newY = prefabPosition.y - ((i + 1) * (textBoxHeight + verticalSpacing)); // Adding 1 to i because we want the new boxes to be below the prefab
@@ -927,5 +933,23 @@ public class PlayScene : MonoBehaviour
     {
         previousRecordsPanel.SetActive(false);
         HideTextBoxes(); // Call the method to hide the created text boxes
+    }
+
+    public IEnumerator FetchGameStats()
+    {
+        string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
+        // string userID = "0a542aca438a0c6397bd82dc659480e1_hemanth";
+        yield return StartCoroutine(GameManager.GetGameStats(userID,
+            // onSuccess callback
+            (games) =>
+            {   // Saving the name and user id , if api is successful.
+                fetchedGames = games;
+            },
+            // onError callback
+            (errorMessage) =>
+            {
+                Debug.LogError("[New User Creation Handler] Failed to create error " + errorMessage);
+            }
+        ));
     }
 }
