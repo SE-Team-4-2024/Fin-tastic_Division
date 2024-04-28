@@ -69,7 +69,7 @@ public class PlayScene : MonoBehaviour
         playAgainButton.onClick.AddListener(() => { PlayAgainButton(); PlayClickSound(); });
         pauseExitToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayClickSound(); });
         historyButton.onClick.AddListener(() => { ShowPreviousRecords(); PlayClickSound(); });
-        closeButtonPrev.onClick.AddListener(() => {CompleteGame(); PlayClickSound(); });
+        closeButtonPrev.onClick.AddListener(() => {MoveToCompleteGamePanel(); PlayClickSound(); });
         buttonClickAudioSource = GetComponent<AudioSource>();
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
@@ -717,7 +717,6 @@ public class PlayScene : MonoBehaviour
 
     void CompleteGame()
     {
-        HidePreviousRecords();
         pauseMenuPanel.SetActive(false);
         hidingPanel.SetActive(true);
         completeGamePanel.SetActive(true);
@@ -726,8 +725,8 @@ public class PlayScene : MonoBehaviour
         float totalTimeTakenInMinutes = (endTime - startTime) / 60f;
         // Calculate the rate (questions answered per minute)
         float rate = totalQuestions / totalTimeTakenInMinutes;
-        // Display the rate in the rateText
-        rateText.text = "Rate: " + rate.ToString("F2") + "/min";
+        int roundedRate = Mathf.RoundToInt(rate); // Round rate to the nearest whole number
+        rateText.text = "Rate: " + roundedRate + "/min";
         double accuracy = ((double)correctlyAnswered / totalQuestions) * 100;
         accuracyText.text = "Accuracy:" + $"{accuracy}%";
         wrongText.text = "Wrong:" + (totalQuestions - correctlyAnswered);
@@ -866,21 +865,25 @@ public class PlayScene : MonoBehaviour
         LoadNextProblem();
     }
 
-    void ShowPreviousRecords()
-    {
-        completeGamePanel.SetActive(false);
-        previousRecordsPanel.SetActive(true);
-        if (createdTextBoxes.Count > 0)
-        {
-            ShowTextBoxes();
-        }
-        {
-            CreateTextBoxes(5);
-        }
+    void MoveToCompleteGamePanel(){
+        DestroyTextBoxes();
+        previousRecordsPanel.SetActive(false);
+        pauseMenuPanel.SetActive(false);
+        hidingPanel.SetActive(true);
+        completeGamePanel.SetActive(true);
     }
 
-    void CreateTextBoxes(int numberOfRecords)
+    void ShowPreviousRecords()
     {
+        StartCoroutine(FetchGameStats());
+        completeGamePanel.SetActive(false);
+        previousRecordsPanel.SetActive(true);
+        CreateTextBoxes(5);
+    }
+
+    void CreateTextBoxes(int limit)
+    {
+        textBoxPrefab.SetActive(true);
         float verticalSpacing = 10f;
         // Get the position of the prefab text box
         Vector3 prefabPosition = textBoxPrefab.transform.position;
@@ -889,9 +892,8 @@ public class PlayScene : MonoBehaviour
         float textBoxHeight = textBoxPrefab.GetComponent<TextMeshProUGUI>().rectTransform.rect.height;
         // Get the font size of the prefab text box
         float fontSize = textBoxPrefab.GetComponent<TextMeshProUGUI>().fontSize;
-
         // Loop through the number of rows
-        for (int i = 0; i < fetchedGames.Length; i++)
+        for (int i = 0; i < fetchedGames.Length && i < limit; i++)
         {
             // Instantiate a new text box prefab
             GameObject newTextBox = Instantiate(textBoxPrefab, transform);
@@ -899,7 +901,7 @@ public class PlayScene : MonoBehaviour
             // Set font size for the new text box
             TextMeshProUGUI textComponent = newTextBox.GetComponent<TextMeshProUGUI>();
             textComponent.fontSize = fontSize;
-            textComponent.text = "Score: " + fetchedGames[i].noOfCorrectAnswers.ToString() + "/" +  totalQuestions.ToString();
+            textComponent.text = (i + 1).ToString() + ". Score: " + fetchedGames[i].noOfCorrectAnswers.ToString() + "/" +  totalQuestions.ToString();
 
             // Calculate position for the new text box
             float newY = prefabPosition.y - ((i + 1) * (textBoxHeight + verticalSpacing)); // Adding 1 to i because we want the new boxes to be below the prefab
@@ -914,27 +916,15 @@ public class PlayScene : MonoBehaviour
         textBoxPrefab.SetActive(false);
     }
 
-     void HideTextBoxes()
-    {
+     void DestroyTextBoxes()
+    {   
         foreach (var textBox in createdTextBoxes)
         {
-            textBox.SetActive(false);
+            Destroy(textBox);
         }
+        createdTextBoxes.Clear();
     }
 
-    void ShowTextBoxes()
-    {
-        foreach (var textBox in createdTextBoxes)
-        {
-            textBox.SetActive(true);
-        }
-    }
-
-    void HidePreviousRecords()
-    {
-        previousRecordsPanel.SetActive(false);
-        HideTextBoxes(); // Call the method to hide the created text boxes
-    }
 
     public IEnumerator FetchGameStats()
     {
