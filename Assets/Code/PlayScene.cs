@@ -732,7 +732,6 @@ public class PlayScene : MonoBehaviour
         accuracyText.text = "Accuracy:" + $"{accuracy}%";
         wrongText.text = "Wrong:" + (totalQuestions - correctlyAnswered);
         StartCoroutine(UpdateGameCompletionStats(accuracy, rate));
-        StartCoroutine(FetchGameStats());
         DisableGameInputs();
     }
 
@@ -743,6 +742,7 @@ public class PlayScene : MonoBehaviour
         System.Action<bool> onSuccess = (bool success) =>
         {
             // Handle onSuccess callback if needed
+            StartCoroutine(FetchGameStats());
             Debug.Log("Updated in database as game completed");
         };
         yield return GameManager.UpdateGameCompletedStats(gameID, accuracy, completionRate, onSuccess, OnError);
@@ -938,6 +938,7 @@ public class PlayScene : MonoBehaviour
     public IEnumerator FetchGameStats()
     {
         string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
+        Debug.Log("Fetching Stats for "+ userID);
         // string userID = "0a542aca438a0c6397bd82dc659480e1_hemanth";
         yield return StartCoroutine(GameManager.GetGameStats(userID,
             // onSuccess callback
