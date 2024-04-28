@@ -13,8 +13,10 @@ public class PlayScene : MonoBehaviour
     private float endTime;
     public TextMeshProUGUI questionsText, stageText, accuracyText, wrongText, rateText;
     public Button[] answerButtons;
-    public GameObject pauseMenuPanel, completeGamePanel, hidingPanel;
-    public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
+    public GameObject pauseMenuPanel, completeGamePanel, hidingPanel, previousRecordsPanel;
+    public GameObject textBoxPrefab; // Reference to the prefab of your text box
+   
+    public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton, historyButton, closeButtonPrev;
     public GameObject fishPrefab;
 
     public VoiceScript voiceScript;
@@ -42,6 +44,7 @@ public class PlayScene : MonoBehaviour
     // Declare a list to keep track of instantiated fish objects
     private List<GameObject> instantiatedFishes = new List<GameObject>();
     float originalTimeScale;
+    private List<GameObject> createdTextBoxes = new List<GameObject>(); // List to store references to created text boxes
     void Start()
     {
         originalTimeScale = Time.timeScale; //Store the original time scale
@@ -62,6 +65,8 @@ public class PlayScene : MonoBehaviour
         backToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayClickSound(); });
         playAgainButton.onClick.AddListener(() => { PlayAgainButton(); PlayClickSound(); });
         pauseExitToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayClickSound(); });
+        historyButton.onClick.AddListener(() => { ShowPreviousRecords(); PlayClickSound(); });
+        closeButtonPrev.onClick.AddListener(() => {CompleteGame(); PlayClickSound(); });
         buttonClickAudioSource = GetComponent<AudioSource>();
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
@@ -708,6 +713,7 @@ public class PlayScene : MonoBehaviour
 
     void CompleteGame()
     {
+        HidePreviousRecords();
         pauseMenuPanel.SetActive(false);
         hidingPanel.SetActive(true);
         completeGamePanel.SetActive(true);
@@ -852,5 +858,74 @@ public class PlayScene : MonoBehaviour
         hidingPanel.SetActive(false);
         EnableGameInputs();
         LoadNextProblem();
+    }
+
+    void ShowPreviousRecords()
+    {
+        completeGamePanel.SetActive(false);
+        previousRecordsPanel.SetActive(true);
+        if (createdTextBoxes.Count > 0)
+        {
+            ShowTextBoxes();
+        }
+        {
+            CreateTextBoxes(5);
+        }
+    }
+
+    void CreateTextBoxes(int numberOfRecords)
+    {
+        float verticalSpacing = 10f;
+        // Get the position of the prefab text box
+        Vector3 prefabPosition = textBoxPrefab.transform.position;
+
+        // Get the height of the prefab text box
+        float textBoxHeight = textBoxPrefab.GetComponent<TextMeshProUGUI>().rectTransform.rect.height;
+        // Get the font size of the prefab text box
+        float fontSize = textBoxPrefab.GetComponent<TextMeshProUGUI>().fontSize;
+
+        // Loop through the number of rows
+        for (int i = 0; i < numberOfRecords; i++)
+        {
+            // Instantiate a new text box prefab
+            GameObject newTextBox = Instantiate(textBoxPrefab, transform);
+            createdTextBoxes.Add(newTextBox); 
+            // Set font size for the new text box
+            TextMeshProUGUI textComponent = newTextBox.GetComponent<TextMeshProUGUI>();
+            textComponent.fontSize = fontSize;
+
+            // Calculate position for the new text box
+            float newY = prefabPosition.y - ((i + 1) * (textBoxHeight + verticalSpacing)); // Adding 1 to i because we want the new boxes to be below the prefab
+            Vector3 newPosition = new Vector3(prefabPosition.x, newY, prefabPosition.z);
+
+            // Set position for the new text box
+            newTextBox.transform.position = newPosition;
+
+            // You might want to modify other properties of the text box (like text content) here
+        }
+        // Deactivate the initial prefab
+        textBoxPrefab.SetActive(false);
+    }
+
+     void HideTextBoxes()
+    {
+        foreach (var textBox in createdTextBoxes)
+        {
+            textBox.SetActive(false);
+        }
+    }
+
+    void ShowTextBoxes()
+    {
+        foreach (var textBox in createdTextBoxes)
+        {
+            textBox.SetActive(true);
+        }
+    }
+
+    void HidePreviousRecords()
+    {
+        previousRecordsPanel.SetActive(false);
+        HideTextBoxes(); // Call the method to hide the created text boxes
     }
 }
