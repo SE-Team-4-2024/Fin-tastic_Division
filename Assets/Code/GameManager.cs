@@ -2,6 +2,7 @@ using UnityEngine.Networking;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public static class GameManager
 {
@@ -92,6 +93,59 @@ public static class GameManager
                 onSuccess?.Invoke(gameID);
             }
             catch (System.Exception ex)
+            {
+                string errorMessage = "Error parsing JSON data: " + ex.Message;
+                Debug.LogError(errorMessage);
+                onError?.Invoke(errorMessage);
+            }
+        }
+    }
+
+    public static IEnumerator GetGameStats(string userID, Action<Game[]> onSuccess, Action<string> onError)
+    {
+        string queryParams = $"{azureFunctionAuthenticationParams}&userID={userID}";
+        string url = $"{baseAzureFunctionUrl}?{queryParams}";
+        Debug.Log("Getting List of Games Stats: " + url);
+
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                string errorMessage = "Failed to fetch game data: " + www.error;
+                Debug.LogError(errorMessage);
+                onError?.Invoke(errorMessage);
+                yield break;
+            }
+
+            string responseBody = www.downloadHandler.text;
+            Debug.Log("Received JSON data: " + responseBody);
+
+            try
+            {
+                // Deserialize the JSON response
+                ApiResponse response = JsonUtility.FromJson<ApiResponse>(responseBody);
+
+                // Parse the 'Content' property as an array of User object
+                ApiResponseContent content = JsonUtility.FromJson<ApiResponseContent>(response.Content);
+
+                if (content == null || (content.games == null || content.games.Length <= 0))
+                {
+                    onSuccess?.Invoke(new Game[0]); // Assuming onError is a delegate that accepts a User[] parameter
+                    yield break;
+                }
+
+                List<Game> gameList = new List<Game>();
+
+                foreach (Game game in content.games)
+                {
+                    gameList.Add(game);
+                }
+
+                onSuccess?.Invoke(gameList.ToArray());
+            }
+            catch (Exception ex)
             {
                 string errorMessage = "Error parsing JSON data: " + ex.Message;
                 Debug.LogError(errorMessage);
