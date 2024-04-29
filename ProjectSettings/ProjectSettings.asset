@@ -795,8 +795,8 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: 
-    Standalone: ZIP_AVAILABLE;NUGET_PACKAGE_READY
+    Android: ZIP_AVAILABLE;NUGET_PACKAGE_READY
+    Standalone: ZIP_AVAILABLE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
