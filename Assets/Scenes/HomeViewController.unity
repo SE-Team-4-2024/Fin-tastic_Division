@@ -4669,6 +4669,7 @@ GameObject:
   - component: {fileID: 1218223883}
   - component: {fileID: 1218223884}
   - component: {fileID: 1218223885}
+  - component: {fileID: 1218223886}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -4944,6 +4945,19 @@ MonoBehaviour:
   toggleSound: {fileID: 8300000, guid: 6d1ba80539b7de24084f86b663d36fe8, type: 3}
   settingsPanel: {fileID: 1404385770}
   tmp_InputField: {fileID: 888312547}
+--- !u!114 &1218223886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1218223874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a3a6a28c6a80a46adde9b4e01eeb93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Settings: {fileID: 11400000, guid: 54fadaba10eab4f7292dccb84e4ed314, type: 2}
 --- !u!1 &1241417151
 GameObject:
   m_ObjectHideFlags: 0
