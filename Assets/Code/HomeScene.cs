@@ -7,14 +7,21 @@ using TMPro;
 
 public class HomeScene : MonoBehaviour
 {
-    [SerializeField] private Button okayButton, settingsButton, closeButton, musicButton, soundButton, playButton;
+    [SerializeField] private Button okayButton, settingsButton, closeButton, musicButton, soundButton, playButton, historyButton, closeButtonPrev;
     [SerializeField] private Sprite musicOnSprite, musicOffSprite; // Add images for music off states
     [SerializeField] private Sprite soundOnSprite, soundOffSprite; // Add images for sound off states
-    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject settingsPanel, previousRecordsPanel;
     [SerializeField] private GameObject hidingPanel;
     [SerializeField] private AudioClip clickSound, toggleSound;
 
     [SerializeField] private GameObject newUserPanel;
+    public GameObject textBoxPrefab; // Reference to the prefab of your text box
+
+
+    private Game[] fetchedGames; 
+
+    private List<GameObject> createdTextBoxes = new List<GameObject>(); // List to store references to created text boxes
+
 
     private AudioSource audioSource;
 
@@ -37,6 +44,10 @@ public class HomeScene : MonoBehaviour
         musicButton.onClick.AddListener(ToggleMusic);
         soundButton.onClick.AddListener(ToggleSound);
         playButton.onClick.AddListener(OnPlayButtonClicked);
+        historyButton.onClick.AddListener(() => { ShowPreviousRecords(); PlayClickSound(); });
+        closeButtonPrev.onClick.AddListener(() => {ClosePreviousrecordsPanel(); PlayClickSound(); });
+
+
         LoadUsersData();
 
         // Default 1 for the sound and setting to PlayerPrefs
@@ -151,6 +162,84 @@ public class HomeScene : MonoBehaviour
         UpdateSoundButtonImage();
     }
 
+    void ShowPreviousRecords()
+    {
+        //StartCoroutine(FetchGameStats());
+        hidingPanel.SetActive(true);
+        previousRecordsPanel.SetActive(true);
+        CreateTextBoxes(5);
+    }
+
+    void ClosePreviousrecordsPanel(){
+        DestroyTextBoxes();
+        previousRecordsPanel.SetActive(false);
+        hidingPanel.SetActive(false);
+    }
+
+    void CreateTextBoxes(int limit)
+    {
+        textBoxPrefab.SetActive(true);
+        float verticalSpacing = 10f;
+        // Get the position of the prefab text box
+        Vector3 prefabPosition = textBoxPrefab.transform.position;
+
+        // Get the height of the prefab text box
+        float textBoxHeight = textBoxPrefab.GetComponent<TextMeshProUGUI>().rectTransform.rect.height;
+        // Get the font size of the prefab text box
+        float fontSize = textBoxPrefab.GetComponent<TextMeshProUGUI>().fontSize;
+        // Loop through the number of rows
+        for (int i = 0; i < fetchedGames.Length && i < limit; i++)
+        {
+            // Instantiate a new text box prefab
+            GameObject newTextBox = Instantiate(textBoxPrefab, transform);
+            createdTextBoxes.Add(newTextBox); 
+            // Set font size for the new text box
+            TextMeshProUGUI textComponent = newTextBox.GetComponent<TextMeshProUGUI>();
+            textComponent.fontSize = fontSize;
+            textComponent.text = (i + 1).ToString() + ". Score: " + fetchedGames[i].noOfCorrectAnswers.ToString() + "/" +  "5";
+
+            // Calculate position for the new text box
+            float newY = prefabPosition.y - ((i + 1) * (textBoxHeight + verticalSpacing)); // Adding 1 to i because we want the new boxes to be below the prefab
+            Vector3 newPosition = new Vector3(prefabPosition.x, newY, prefabPosition.z);
+
+            // Set position for the new text box
+            newTextBox.transform.position = newPosition;
+
+            // You might want to modify other properties of the text box (like text content) here
+        }
+        // Deactivate the initial prefab
+        textBoxPrefab.SetActive(false);
+    }
+
+     void DestroyTextBoxes()
+    {   
+        foreach (var textBox in createdTextBoxes)
+        {
+            Destroy(textBox);
+        }
+        createdTextBoxes.Clear();
+    }
+
+
+    public IEnumerator FetchGameStats()
+    {
+        string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
+        Debug.Log("Fetching Stats for "+ userID);
+        // string userID = "0a542aca438a0c6397bd82dc659480e1_hemanth";
+        yield return StartCoroutine(GameManager.GetGameStats(userID,
+            // onSuccess callback
+            (games) =>
+            {   // Saving the name and user id , if api is successful.
+                fetchedGames = games;
+            },
+            // onError callback
+            (errorMessage) =>
+            {
+                Debug.LogError("[New User Creation Handler] Failed to create error " + errorMessage);
+            }
+        ));
+    }
+
     private void UpdateUserInformation(){
         string name = tmp_InputField.text;
         userManagerInstance = FindObjectOfType<UserManager>();
@@ -205,6 +294,7 @@ public class HomeScene : MonoBehaviour
                 Debug.Log(UserManager.NAME_KEY);
                 Debug.Log(PlayerPrefs.GetString(UserManager.NAME_KEY));
                 tmp_InputField.text = PlayerPrefs.GetString(UserManager.NAME_KEY);
+                //StartCoroutine(FetchGameStats());
             }
         }
     }
