@@ -167,6 +167,7 @@ public class HomeScene : MonoBehaviour
     {
         LoadGameStats();
         hidingPanel.SetActive(true);
+        previousRecordsPanel.SetActive(true);
         CreateTextBoxes(5);
     }
 
@@ -294,7 +295,7 @@ public class HomeScene : MonoBehaviour
             previousRecordsPanel.SetActive(false);
             historyButton.gameObject.SetActive(false);
         } else {
-            previousRecordsPanel.SetActive(true);
+            historyButton.gameObject.SetActive(true);
         }
     }
 
