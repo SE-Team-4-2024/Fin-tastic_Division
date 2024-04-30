@@ -22,6 +22,8 @@ public class PlayScene : MonoBehaviour
 
     public VoiceScript voiceScript;
 
+     private UserManager userManagerInstance;
+
     public GameObject fishPrefab2;
     public GameObject fishPrefab3;
     public GameObject fishPrefab4;
@@ -741,7 +743,7 @@ public class PlayScene : MonoBehaviour
         System.Action<bool> onSuccess = (bool success) =>
         {
             // Handle onSuccess callback if needed
-            StartCoroutine(FetchGameStats());
+            FetchGameStats();
             Debug.Log("Updated in database as game completed");
         };
         yield return GameManager.UpdateGameCompletedStats(gameID, accuracy, completionRate, onSuccess, OnError);
@@ -875,7 +877,6 @@ public class PlayScene : MonoBehaviour
 
     void ShowPreviousRecords()
     {
-        StartCoroutine(FetchGameStats());
         completeGamePanel.SetActive(false);
         previousRecordsPanel.SetActive(true);
         CreateTextBoxes(5);
@@ -893,6 +894,7 @@ public class PlayScene : MonoBehaviour
         // Get the font size of the prefab text box
         float fontSize = textBoxPrefab.GetComponent<TextMeshProUGUI>().fontSize;
         // Loop through the number of rows
+        Debug.Log(fetchedGames.Length + "Length of stats");
         for (int i = 0; i < fetchedGames.Length && i < limit; i++)
         {
             // Instantiate a new text box prefab
@@ -926,22 +928,10 @@ public class PlayScene : MonoBehaviour
     }
 
 
-    public IEnumerator FetchGameStats()
+    public void FetchGameStats()
     {
-        string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
-        Debug.Log("Fetching Stats for "+ userID);
-        // string userID = "0a542aca438a0c6397bd82dc659480e1_hemanth";
-        yield return StartCoroutine(GameManager.GetGameStats(userID,
-            // onSuccess callback
-            (games) =>
-            {   // Saving the name and user id , if api is successful.
-                fetchedGames = games;
-            },
-            // onError callback
-            (errorMessage) =>
-            {
-                Debug.LogError("[New User Creation Handler] Failed to create error " + errorMessage);
-            }
-        ));
+        Debug.Log("Fetching games Stasts");
+        userManagerInstance = FindObjectOfType<UserManager>();
+        fetchedGames = userManagerInstance.FetchGameStats();
     }
 }
