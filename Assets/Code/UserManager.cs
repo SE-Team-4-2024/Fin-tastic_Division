@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using UnityEngine.UI;
+
 
 
 /**
@@ -13,6 +16,7 @@ using System.Collections.Generic;
 public class UserManager : MonoBehaviour
 {
     private string userID;
+    [SerializeField] private Button historyButton;
     private string userName;
     private User[] users;
 
@@ -22,6 +26,7 @@ public class UserManager : MonoBehaviour
     public const string NAME_KEY = "name";
     public const string MUSIC_KEY = "MusicOn";
     public const string SOUND_KEY = "SoundOn";
+    private Game[] fetchedGames; 
 
     public const string GAME_KEY = "gameID";
 
@@ -35,6 +40,7 @@ public class UserManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("User Manager............");
         FetchUsersSynchronously();
     }
 
@@ -181,5 +187,34 @@ public class UserManager : MonoBehaviour
 
     public void SetImage(int imageKey){
         image = imageKey;
+    }
+
+
+    public Game[] FetchGameStats(){
+        string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
+        Debug.Log("Fetching Stats for "+ userID);
+        fetchedGames = GameManager.GetGameStatsSync(userID); // Assuming ther
+        if (fetchedGames != null && fetchedGames.Length >= 1)
+        {
+           historyButton.gameObject.SetActive(true);
+           return fetchedGames;
+        }
+        else
+        {
+          
+            fetchedGames = new Game[0]; // Assign an empty array if no users are found
+            return fetchedGames;
+        }
+    }
+
+    public Game[] FetchGameStatsData()
+    {
+        if(fetchedGames  != null && fetchedGames.Length >=1){ // If the data is already loaded
+            historyButton.gameObject.SetActive(true);
+            return fetchedGames;
+        }
+
+        fetchedGames = FetchGameStats();
+        return fetchedGames;
     }
 }

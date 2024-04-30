@@ -15,6 +15,7 @@ public class HomeScene : MonoBehaviour
     [SerializeField] private AudioClip clickSound, toggleSound;
 
     [SerializeField] private GameObject newUserPanel;
+    private Game[] fetchedGameStats;
     public GameObject textBoxPrefab; // Reference to the prefab of your text box
 
 
@@ -164,10 +165,15 @@ public class HomeScene : MonoBehaviour
 
     void ShowPreviousRecords()
     {
-        //StartCoroutine(FetchGameStats());
+        LoadGameStats();
         hidingPanel.SetActive(true);
-        previousRecordsPanel.SetActive(true);
         CreateTextBoxes(5);
+    }
+
+    void OnEnable()
+    {
+        Debug.Log("Scene initialized or re-initialized....");
+        LoadGameStats();
     }
 
     void ClosePreviousrecordsPanel(){
@@ -188,7 +194,7 @@ public class HomeScene : MonoBehaviour
         // Get the font size of the prefab text box
         float fontSize = textBoxPrefab.GetComponent<TextMeshProUGUI>().fontSize;
         // Loop through the number of rows
-        for (int i = 0; i < fetchedGames.Length && i < limit; i++)
+        for (int i = 0; i < fetchedGameStats.Length && i < limit; i++)
         {
             // Instantiate a new text box prefab
             GameObject newTextBox = Instantiate(textBoxPrefab, transform);
@@ -196,7 +202,7 @@ public class HomeScene : MonoBehaviour
             // Set font size for the new text box
             TextMeshProUGUI textComponent = newTextBox.GetComponent<TextMeshProUGUI>();
             textComponent.fontSize = fontSize;
-            textComponent.text = (i + 1).ToString() + ". Score: " + fetchedGames[i].noOfCorrectAnswers.ToString() + "/" +  "5";
+            textComponent.text = (i + 1).ToString() + ". Score: " + fetchedGameStats[i].noOfCorrectAnswers.ToString() + "/" +  "5";
 
             // Calculate position for the new text box
             float newY = prefabPosition.y - ((i + 1) * (textBoxHeight + verticalSpacing)); // Adding 1 to i because we want the new boxes to be below the prefab
@@ -218,26 +224,6 @@ public class HomeScene : MonoBehaviour
             Destroy(textBox);
         }
         createdTextBoxes.Clear();
-    }
-
-
-    public IEnumerator FetchGameStats()
-    {
-        string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
-        Debug.Log("Fetching Stats for "+ userID);
-        // string userID = "0a542aca438a0c6397bd82dc659480e1_hemanth";
-        yield return StartCoroutine(GameManager.GetGameStats(userID,
-            // onSuccess callback
-            (games) =>
-            {   // Saving the name and user id , if api is successful.
-                fetchedGames = games;
-            },
-            // onError callback
-            (errorMessage) =>
-            {
-                Debug.LogError("[New User Creation Handler] Failed to create error " + errorMessage);
-            }
-        ));
     }
 
     private void UpdateUserInformation(){
@@ -282,7 +268,6 @@ public class HomeScene : MonoBehaviour
         {
             // Call the GetUsers method
             User[] users = userManagerInstance.GetUsers();
-
             Debug.Log("[Home Scene]  Users Length" + users.Length);
 
             if (users == null || users.Length <= 0)
@@ -294,8 +279,22 @@ public class HomeScene : MonoBehaviour
                 Debug.Log(UserManager.NAME_KEY);
                 Debug.Log(PlayerPrefs.GetString(UserManager.NAME_KEY));
                 tmp_InputField.text = PlayerPrefs.GetString(UserManager.NAME_KEY);
-                //StartCoroutine(FetchGameStats());
+                LoadGameStats();
             }
+        }
+    }
+
+    private void LoadGameStats()
+    {
+        userManagerInstance = FindObjectOfType<UserManager>();
+        fetchedGameStats = userManagerInstance.FetchGameStatsData();
+        Debug.Log(fetchedGameStats.Length + "Length");
+        if (fetchedGameStats.Length < 1)
+        {
+            previousRecordsPanel.SetActive(false);
+            historyButton.gameObject.SetActive(false);
+        } else {
+            previousRecordsPanel.SetActive(true);
         }
     }
 

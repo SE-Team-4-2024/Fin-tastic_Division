@@ -153,4 +153,61 @@ public static class GameManager
             }
         }
     }
+
+    public static Game[] GetGameStatsSync(string userID)
+    {
+        string queryParams = $"{azureFunctionAuthenticationParams}&userID={userID}";
+        string url = $"{baseAzureFunctionUrl}?{queryParams}";
+        Debug.Log("Getting List of Games Stats: " + url);
+
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            www.SendWebRequest();
+
+            while (!www.isDone)
+            {
+                // Wait for the request to complete
+            }
+
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                string errorMessage = "Failed to fetch game data: " + www.error;
+                Debug.LogError(errorMessage);
+                return new Game[0];
+            }
+
+            string responseBody = www.downloadHandler.text;
+            Debug.Log("Received JSON data: " + responseBody);
+
+            try
+            {
+                // Deserialize the JSON response
+                ApiResponse response = JsonUtility.FromJson<ApiResponse>(responseBody);
+
+                // Parse the 'Content' property as an array of User object
+                ApiResponseContent content = JsonUtility.FromJson<ApiResponseContent>(response.Content);
+
+                if (content == null || (content.games == null || content.games.Length <= 0))
+                {
+                    return new Game[0];
+                }
+
+                List<Game> gameList = new List<Game>();
+
+                foreach (Game game in content.games)
+                {
+                    gameList.Add(game);
+                }
+
+                return gameList.ToArray();
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = "Error parsing JSON data: " + ex.Message;
+                Debug.LogError(errorMessage);
+                return new Game[0];
+            }
+        }
+    }
+
 }
