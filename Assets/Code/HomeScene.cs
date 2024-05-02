@@ -36,6 +36,7 @@ public class HomeScene : MonoBehaviour
 
     private void Start()
     {
+        
         audioSource = GetComponent<AudioSource>();
         audioController = FindObjectOfType<AudioController>(); // Find the AudioController in the scene
 
@@ -69,8 +70,15 @@ public class HomeScene : MonoBehaviour
 
     private void OnPlayButtonClicked()
     {
-        PlayClickSound(); // Play the click sound first
+        PlayClickSound();
         StartCoroutine(LoadSceneWithDelay(1, clickSound.length - 0.3f)); // Load the scene after the sound finishes playing
+        playButton.gameObject.SetActive(false); 
+    }
+
+    public void EnablePlayButton()
+    {
+        playButton.gameObject.SetActive(true); 
+        playButton.interactable = true;
     }
 
     private IEnumerator LoadSceneWithDelay(int sceneid, float delay)
@@ -176,6 +184,7 @@ public class HomeScene : MonoBehaviour
         Debug.Log("Scene initialized or re-initialized....");
         LoadGameStats();
     }
+    
 
     void ClosePreviousrecordsPanel(){
         DestroyTextBoxes();

@@ -785,6 +785,11 @@ public class PlayScene : MonoBehaviour
     {
         yield return new WaitForSeconds(0.3f); // Adjust the delay time as needed
         SceneManager.LoadScene("HomeViewController"); // Transition to the main menu
+        HomeScene homeScene = FindObjectOfType<HomeScene>();
+        if(homeScene != null)
+        {
+            homeScene.EnablePlayButton();
+        }
     }
 
 
