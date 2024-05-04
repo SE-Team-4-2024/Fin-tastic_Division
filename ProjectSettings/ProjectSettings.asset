@@ -807,7 +807,7 @@ PlayerSettings:
     0: ZIP_AVAILABLE;NUGET_PACKAGE_READY
     13: 
     Android: 
-    WebGL: ZIP_AVAILABLE
+    WebGL: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
