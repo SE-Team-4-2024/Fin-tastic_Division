@@ -1,0 +1,59 @@
+fileFormatVersion: 2
+guid: c6af1a5580d9345f6ab24772a9ebd966
+PluginImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  iconMap: {}
+  executionOrder: {}
+  defineConstraints: []
+  isPreloaded: 1
+  isOverridable: 1
+  isExplicitlyReferenced: 0
+  validateReferences: 1
+  platformData:
+  - first:
+      : Any
+    second:
+      enabled: 0
+      settings:
+        Exclude Android: 0
+        Exclude CloudRendering: 0
+        Exclude Editor: 1
+        Exclude EmbeddedLinux: 0
+        Exclude GameCoreScarlett: 0
+        Exclude GameCoreXboxOne: 0
+        Exclude Linux64: 0
+        Exclude OSXUniversal: 0
+        Exclude PS4: 0
+        Exclude PS5: 0
+        Exclude QNX: 0
+        Exclude Stadia: 0
+        Exclude Switch: 0
+        Exclude VisionOS: 0
+        Exclude WebGL: 0
+        Exclude Win: 0
+        Exclude Win64: 0
+        Exclude WindowsStoreApps: 1
+        Exclude XboxOne: 0
+        Exclude iOS: 0
+        Exclude tvOS: 0
+  - first:
+      Any: 
+    second:
+      enabled: 0
+      settings: {}
+  - first:
+      Editor: Editor
+    second:
+      enabled: 1
+      settings:
+        DefaultValueInitialized: true
+  - first:
+      Windows Store Apps: WindowsStoreApps
+    second:
+      enabled: 1
+      settings:
+        CPU: ARMv7
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
