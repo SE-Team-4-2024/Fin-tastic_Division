@@ -1210,7 +1210,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 28, y: 137}
+  m_AnchoredPosition: {x: 28, y: 199}
   m_SizeDelta: {x: 97.7647, y: 31.418457}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1502877557
@@ -1340,7 +1340,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 18.842346
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
