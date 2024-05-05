@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class AudioController : MonoBehaviour
 {
     public AudioSource backgroundMusic;
-    public AudioClip panelSoundClip; // Assign the sound clip directly
+    public AudioClip panelSoundClip;
 
     public static AudioController instance;
 
@@ -21,6 +20,21 @@ public class AudioController : MonoBehaviour
             Destroy(gameObject);
         }
         backgroundMusic.volume = 0.3f;
+        backgroundMusic.loop = true;  // Set background music to loop
+    }
+
+    public void ToggleBackgroundMusic(bool isMusicOn)
+    {
+        if (isMusicOn)
+        {
+            backgroundMusic.Play();
+            Debug.Log("Background music is playing.");
+        }
+        else
+        {
+            backgroundMusic.Pause();
+            Debug.Log("Background music is paused.");
+        }
     }
 
     public void PlayPanelSoundAndResumeBackgroundMusic()
@@ -31,13 +45,13 @@ public class AudioController : MonoBehaviour
 
     private IEnumerator PlaySoundAndWait(AudioClip clip)
     {
-        // Play the panel sound
         backgroundMusic.PlayOneShot(clip);
-
-        // Wait for the clip to finish
         yield return new WaitForSeconds(clip.length);
+        //backgroundMusic.Resume();  // Resume background music after panel sound
+    }
 
-        // Resume background music
-        //backgroundMusic.UnPause();
+    public void ResumeBackgroundMusic()
+    {
+        backgroundMusic.UnPause();
     }
 }

@@ -13,11 +13,16 @@ public class PlayScene : MonoBehaviour
     private float endTime;
     public TextMeshProUGUI questionsText, stageText, accuracyText, wrongText, rateText;
     public Button[] answerButtons;
-    public GameObject pauseMenuPanel, completeGamePanel, hidingPanel;
-    public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton;
+    public GameObject pauseMenuPanel, completeGamePanel, hidingPanel, previousRecordsPanel;
+    public GameObject textBoxPrefab; // Reference to the prefab of your text box
+   
+    public Button closeButton, restartButton, backToMainMenuButton, pauseButton, resumeButton, playAgainButton, pauseExitToMainMenuButton, historyButton, closeButtonPrev;
     public GameObject fishPrefab;
+    private Game[] fetchedGames; 
 
     //public VoiceScript voiceScript;
+
+    private UserManager userManagerInstance;
 
     public GameObject fishPrefab2;
     public GameObject fishPrefab3;
@@ -35,24 +40,38 @@ public class PlayScene : MonoBehaviour
     public AudioClip correctAnswerAudio, wrongAnswerAudio, buttonClickAudioClip;
     public RectTransform numeratorBarPanel; // Reference to the numerator bar panel
     private bool isAnimating = false;
+    private bool isSoundOn;
+    private AudioController audioController; // Reference to AudioController
+
+
 
     private List<RectTransform> denominatorBarPanels = new List<RectTransform>(); // List to store references to denominator bar panels
     // Declare a list to keep track of instantiated fish objects
     private List<GameObject> instantiatedFishes = new List<GameObject>();
+    float originalTimeScale;
+    private List<GameObject> createdTextBoxes = new List<GameObject>(); // List to store references to created text boxes
     void Start()
     {
+        originalTimeScale = Time.timeScale; //Store the original time scale
         // Ensure that both fish animations are initially inactive
         happyFishAnim.SetActive(false);
         sadFishAnim.SetActive(false);
         pauseMenuPanel.SetActive(false);
         completeGamePanel.SetActive(false);
-        pauseButton.onClick.AddListener(() => { PauseGame(); PlayAudioClickSound(); });
-        closeButton.onClick.AddListener(() => { ResumeGame(); PlayAudioClickSound(); });
-        resumeButton.onClick.AddListener(() => { ResumeGame(); PlayAudioClickSound(); });
-        restartButton.onClick.AddListener(() => { RestartGame(); PlayAudioClickSound(); });
-        backToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayAudioClickSound(); });
-        playAgainButton.onClick.AddListener(() => { PlayAgainButton(); PlayAudioClickSound(); });
-        pauseExitToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayAudioClickSound(); });
+        audioController = FindObjectOfType<AudioController>(); // Find the AudioController in the scene
+
+        // Load sound settings from PlayerPrefs
+        isSoundOn = PlayerPrefs.GetInt(UserManager.SOUND_KEY, 1) == 1; // Default is true
+
+        pauseButton.onClick.AddListener(() => { PauseGame(); PlayClickSound(); });
+        closeButton.onClick.AddListener(() => { ResumeGame(); PlayClickSound(); });
+        resumeButton.onClick.AddListener(() => { ResumeGame(); PlayClickSound(); });
+        restartButton.onClick.AddListener(() => { RestartGame(); PlayClickSound(); });
+        backToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayClickSound(); });
+        playAgainButton.onClick.AddListener(() => { PlayAgainButton(); PlayClickSound(); });
+        pauseExitToMainMenuButton.onClick.AddListener(() => { BackToMainMenu(); PlayClickSound(); });
+        //historyButton.onClick.AddListener(() => { ShowPreviousRecords(); PlayClickSound(); });
+        //closeButtonPrev.onClick.AddListener(() => {MoveToCompleteGamePanel(); PlayClickSound(); });
         buttonClickAudioSource = GetComponent<AudioSource>();
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
@@ -60,46 +79,48 @@ public class PlayScene : MonoBehaviour
             Debug.LogError("No AudioSource Component found on this game object. Please add one.");
         }
 
-        CreateNewGame(); // To create a new game to store in database
+        //CreateNewGame(); // To create a new game to store in database
         startTime = Time.time; // Track the start time when the game starts
         LoadNextProblem(); // Start loading the first problem
+        Debug.Log("------------START---------------------");
     }
 
-    public void PlayAudioClickSound()
+
+    public void PlayClickSound()
     {
-        if (buttonClickAudioSource != null && buttonClickAudioClip != null)
+        if (buttonClickAudioSource != null && buttonClickAudioClip != null && isSoundOn)
         {
             buttonClickAudioSource.clip = buttonClickAudioClip;
             buttonClickAudioSource.Play();
-        }
-        else
-        {
-            Debug.LogError("AudioSource or AudioClip is not assigned.");
         }
     }
 
 
     IEnumerator PlayAudioSoundAfterDelay(bool isAnswerCorrect)
     {
-        yield return new WaitForSeconds(0.5f);
-        audioSource.clip = isAnswerCorrect ? correctAnswerAudio : wrongAnswerAudio;
-        audioSource.Play();
+        if (audioSource != null && correctAnswerAudio != null && wrongAnswerAudio != null && isSoundOn)
+        {
+            yield return new WaitForSeconds(0.5f);
+            audioSource.clip = isAnswerCorrect ? correctAnswerAudio : wrongAnswerAudio;
+            audioSource.Play();
+        }
+        
     }
 
 
-    void CreateNewGame()
-    {
-        string userID = "johnWick_12"; // To change in later phase, once profile page is built up.
-        Debug.Log("Creating New Game for the userID" + userID);
+    // void CreateNewGame()
+    // {
+    //     string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
+    //     Debug.Log("Creating New Game for the userID" + userID);
 
-        // Call the asynchronous method and pass onSuccess and onError callbacks
-        StartCoroutine(GameManager.CreateNewGame(userID, onSuccess, OnError));
-    }
+    //     // Call the asynchronous method and pass onSuccess and onError callbacks
+    //     StartCoroutine(GameManager.CreateNewGame(userID, onSuccess, OnError));
+    // }
 
     void onSuccess(string gameID)
     {
         Debug.Log("Game Succesfully created with gameId" + gameID);
-        PlayerPrefs.SetString("gameID", gameID);
+        PlayerPrefs.SetString(UserManager.GAME_KEY, gameID);
     }
 
     void LoadNextProblem()
@@ -118,13 +139,9 @@ public class PlayScene : MonoBehaviour
         ResetButtonColors();
         stageText.text = $" {currentQuestionIndex + 1}/{totalQuestions}";
         questionsText.text = $"{problem.numerator} / {problem.denominator} =?";
-        // if (voiceScript != null)
+        // if (voiceScript != null && isSoundOn)
         // {
         //     voiceScript.Speak();
-        // }
-        // else
-        // {
-        //     Debug.LogError("VoiceScript is null");
         // }
 
         // Instantiate fishes for the numerator
@@ -160,7 +177,7 @@ public class PlayScene : MonoBehaviour
             }
 
             answerButtons[i].onClick.RemoveAllListeners();
-            answerButtons[i].onClick.AddListener(() => { PlayAudioClickSound(); AnswerSelected(optionIndex); StartCoroutine(PlayAudioSoundAfterDelay(optionIndex == correctAnswerIndex)); });
+            answerButtons[i].onClick.AddListener(() => { PlayClickSound(); AnswerSelected(optionIndex); StartCoroutine(PlayAudioSoundAfterDelay(optionIndex == correctAnswerIndex)); });
         }
     }
     void GenerateFishes(DivisionProblem problem, System.Action onComplete)
@@ -332,13 +349,13 @@ public class PlayScene : MonoBehaviour
         float panelWidth = numeratorBarPanel.rect.width / 2; // Two panels per row
 
         // Calculate the spacing between panels horizontally
-        float horizontalSpacing = panelWidth + 100f; // Increased spacing
+        float horizontalSpacing = panelWidth + 50f; // Increased spacing
 
         // Increase the vertical spacing between panels
-        float verticalSpacing = 150f; // Increased vertical spacing
+        float verticalSpacing = 200f; // Increased vertical spacing
 
         // Define the offset from the top of the screen
-        float yOffset = 150f; // Adjust this value as needed
+        float yOffset = 300f; // Adjust this value as needed
 
         // Clear the existing denominator bar panels
         ClearDenominatorBarPanels();
@@ -543,7 +560,11 @@ public class PlayScene : MonoBehaviour
         // Check if an animation is already in progress
         if (isAnimating)
         {
-            return; // Ignore the click if an animation is already playing
+            // Stop the animation coroutine for moving fishes to the denominator bar
+            StopCoroutine("AnimateFishToDenominator");
+
+            // Clear the numerator bar to remove any instantiated fish
+            ClearNumeratorBar();
         }
 
         // Set the flag to indicate that an animation is starting
@@ -574,7 +595,7 @@ public class PlayScene : MonoBehaviour
             answerButtons[index].GetComponent<Image>().color = isCorrect ? Color.green : Color.red;
             answerButtons[correctAnswerIndex].GetComponent<Image>().color = Color.green;
             correctlyAnswered += isCorrect ? 1 : 0;
-            PlayAudioSoundAfterDelay(isCorrect);
+            //PlayAudioSoundAfterDelay(isCorrect);
             //voiceScript.StopSpeaking();
             // Activate the corresponding fish animation based on the user's answer
             if (isCorrect)
@@ -597,7 +618,6 @@ public class PlayScene : MonoBehaviour
         StartCoroutine(UpdateUserResponseCoroutine(isCorrect));
         StartCoroutine(ContinueAfterFeedback(isCorrect, index));
     }
-
 
     // Call this function when you want to animate a fish
     void AnimateFish(bool isHappy)
@@ -669,7 +689,7 @@ public class PlayScene : MonoBehaviour
 
     IEnumerator UpdateUserResponseCoroutine(bool isCorrect)
     {
-        string gameID = PlayerPrefs.GetString("gameID");
+        string gameID = PlayerPrefs.GetString(UserManager.GAME_KEY);
         yield return GameManager.UpdateUserResponse(gameID, isCorrect, onSuccessfulUpdate, OnError);
     }
 
@@ -688,7 +708,7 @@ public class PlayScene : MonoBehaviour
         {
             LoadNextProblem();
         }
-        else
+        else if (!pauseMenuPanel.activeSelf)
         {
             CompleteGame();
         }
@@ -699,6 +719,7 @@ public class PlayScene : MonoBehaviour
 
     void CompleteGame()
     {
+        pauseMenuPanel.SetActive(false);
         hidingPanel.SetActive(true);
         completeGamePanel.SetActive(true);
         endTime = Time.time; // Track the end time when the game completes
@@ -706,8 +727,8 @@ public class PlayScene : MonoBehaviour
         float totalTimeTakenInMinutes = (endTime - startTime) / 60f;
         // Calculate the rate (questions answered per minute)
         float rate = totalQuestions / totalTimeTakenInMinutes;
-        // Display the rate in the rateText
-        rateText.text = "Rate: " + rate.ToString("F2") + "/min";
+        int roundedRate = Mathf.RoundToInt(rate); // Round rate to the nearest whole number
+        rateText.text = "Rate: " + roundedRate + "/min";
         double accuracy = ((double)correctlyAnswered / totalQuestions) * 100;
         accuracyText.text = "Accuracy:" + $"{accuracy}%";
         wrongText.text = "Wrong:" + (totalQuestions - correctlyAnswered);
@@ -717,11 +738,12 @@ public class PlayScene : MonoBehaviour
 
     IEnumerator UpdateGameCompletionStats(double accuracy, double completionRate)
     {
-        string gameID = PlayerPrefs.GetString("gameID");
+        string gameID = PlayerPrefs.GetString(UserManager.GAME_KEY);
         // Define the success and error callbacks
         System.Action<bool> onSuccess = (bool success) =>
         {
             // Handle onSuccess callback if needed
+            FetchGameStats();
             Debug.Log("Updated in database as game completed");
         };
         yield return GameManager.UpdateGameCompletedStats(gameID, accuracy, completionRate, onSuccess, OnError);
@@ -730,23 +752,32 @@ public class PlayScene : MonoBehaviour
 
     void PauseGame()
     {
-
         hidingPanel.SetActive(true);
         pauseMenuPanel.SetActive(true);
         DisableGameInputs();
+        Time.timeScale = 0; //Freeze the game
     }
 
     void ResumeGame()
     {
-        hidingPanel.SetActive(false);
-        pauseMenuPanel.SetActive(false);
-        EnableGameInputs();
+        Time.timeScale = originalTimeScale; // Unfreeze the game
+        if (currentQuestionIndex == totalQuestions)
+        {
+            // If the game has been completed, show the complete panel
+            CompleteGame();
+        }
+        else
+        {
+            hidingPanel.SetActive(false);
+            pauseMenuPanel.SetActive(false);
+            EnableGameInputs();
+        }
     }
 
     void BackToMainMenu()
     {
-        PlayAudioClickSound(); // Play the click sound first
-                               // Use a delay to ensure the sound plays before transitioning
+        Time.timeScale = originalTimeScale; // Unfreeze the game
+        PlayClickSound(); // Play the click sound first
         StartCoroutine(DelayBeforeMainMenuTransition());
     }
 
@@ -754,14 +785,25 @@ public class PlayScene : MonoBehaviour
     {
         yield return new WaitForSeconds(0.3f); // Adjust the delay time as needed
         SceneManager.LoadScene("HomeViewController"); // Transition to the main menu
+        HomeScene homeScene = FindObjectOfType<HomeScene>();
+        if(homeScene != null)
+        {
+            homeScene.EnablePlayButton();
+        }
     }
 
 
     void RestartGame()
     {
+        Time.timeScale = originalTimeScale; // Unfreeze the game
+        completeGamePanel.SetActive(false);
+        hidingPanel.SetActive(false);
+        pauseMenuPanel.SetActive(false);
+        EnableGameInputs();
         currentQuestionIndex = 0;
         correctlyAnswered = 0;
         ResumeGame();
+        //CreateNewGame();
         LoadNextProblem();
     }
 
@@ -772,6 +814,7 @@ public class PlayScene : MonoBehaviour
         {
             button.gameObject.transform.SetParent(pauseMenuPanel.transform);
             button.interactable = false;
+            button.gameObject.SetActive(false);
         }
 
         // Hide the denominator bars and fishes inside them
@@ -797,6 +840,7 @@ public class PlayScene : MonoBehaviour
         {
             button.gameObject.transform.SetParent(transform);
             button.interactable = true;
+            button.gameObject.SetActive(true);
         }
 
         // Show the denominator bars and fishes inside them
@@ -817,12 +861,82 @@ public class PlayScene : MonoBehaviour
 
     void PlayAgainButton()
     {
+        Time.timeScale = originalTimeScale; // Unfreeze the game
         currentQuestionIndex = 0;
         correctlyAnswered = 0;
+        pauseMenuPanel.SetActive(false);
         completeGamePanel.SetActive(false);
         pauseButton.interactable = true;
         hidingPanel.SetActive(false);
         EnableGameInputs();
         LoadNextProblem();
+    }
+
+    void MoveToCompleteGamePanel(){
+        DestroyTextBoxes();
+        previousRecordsPanel.SetActive(false);
+        pauseMenuPanel.SetActive(false);
+        hidingPanel.SetActive(true);
+        completeGamePanel.SetActive(true);
+    }
+
+    void ShowPreviousRecords()
+    {
+        completeGamePanel.SetActive(false);
+        previousRecordsPanel.SetActive(true);
+        CreateTextBoxes(5);
+    }
+
+    void CreateTextBoxes(int limit)
+    {
+        textBoxPrefab.SetActive(true);
+        float verticalSpacing = 10f;
+        // Get the position of the prefab text box
+        Vector3 prefabPosition = textBoxPrefab.transform.position;
+
+        // Get the height of the prefab text box
+        float textBoxHeight = textBoxPrefab.GetComponent<TextMeshProUGUI>().rectTransform.rect.height;
+        // Get the font size of the prefab text box
+        float fontSize = textBoxPrefab.GetComponent<TextMeshProUGUI>().fontSize;
+        // Loop through the number of rows
+        Debug.Log(fetchedGames.Length + "Length of stats");
+        for (int i = 0; i < fetchedGames.Length && i < limit; i++)
+        {
+            // Instantiate a new text box prefab
+            GameObject newTextBox = Instantiate(textBoxPrefab, transform);
+            createdTextBoxes.Add(newTextBox); 
+            // Set font size for the new text box
+            TextMeshProUGUI textComponent = newTextBox.GetComponent<TextMeshProUGUI>();
+            textComponent.fontSize = fontSize;
+            textComponent.text = (i + 1).ToString() + ". Score: " + fetchedGames[i].noOfCorrectAnswers.ToString() + "/" +  totalQuestions.ToString();
+
+            // Calculate position for the new text box
+            float newY = prefabPosition.y - ((i + 1) * (textBoxHeight + verticalSpacing)); // Adding 1 to i because we want the new boxes to be below the prefab
+            Vector3 newPosition = new Vector3(prefabPosition.x, newY, prefabPosition.z);
+
+            // Set position for the new text box
+            newTextBox.transform.position = newPosition;
+
+            // You might want to modify other properties of the text box (like text content) here
+        }
+        // Deactivate the initial prefab
+        textBoxPrefab.SetActive(false);
+    }
+
+     void DestroyTextBoxes()
+    {   
+        foreach (var textBox in createdTextBoxes)
+        {
+            Destroy(textBox);
+        }
+        createdTextBoxes.Clear();
+    }
+
+
+    public void FetchGameStats()
+    {
+        Debug.Log("Fetching games Stasts");
+        userManagerInstance = FindObjectOfType<UserManager>();
+        fetchedGames = userManagerInstance.FetchGameStats();
     }
 }
