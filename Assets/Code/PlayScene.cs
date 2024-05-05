@@ -79,7 +79,7 @@ public class PlayScene : MonoBehaviour
             Debug.LogError("No AudioSource Component found on this game object. Please add one.");
         }
 
-        //CreateNewGame(); // To create a new game to store in database
+        CreateNewGame(); // To create a new game to store in database
         startTime = Time.time; // Track the start time when the game starts
         LoadNextProblem(); // Start loading the first problem
         Debug.Log("------------START---------------------");
@@ -108,14 +108,14 @@ public class PlayScene : MonoBehaviour
     }
 
 
-    // void CreateNewGame()
-    // {
-    //     string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
-    //     Debug.Log("Creating New Game for the userID" + userID);
+    void CreateNewGame()
+    {
+        string userID = PlayerPrefs.GetString(UserManager.USERID_KEY);
+        Debug.Log("Creating New Game for the userID" + userID);
 
-    //     // Call the asynchronous method and pass onSuccess and onError callbacks
-    //     StartCoroutine(GameManager.CreateNewGame(userID, onSuccess, OnError));
-    // }
+        // Call the asynchronous method and pass onSuccess and onError callbacks
+        StartCoroutine(GameManager.CreateNewGame(userID, onSuccess, OnError));
+    }
 
     void onSuccess(string gameID)
     {
@@ -803,7 +803,7 @@ public class PlayScene : MonoBehaviour
         currentQuestionIndex = 0;
         correctlyAnswered = 0;
         ResumeGame();
-        //CreateNewGame();
+        CreateNewGame();
         LoadNextProblem();
     }
 

@@ -788,6 +788,7 @@ GameObject:
   - component: {fileID: 1218223882}
   - component: {fileID: 1218223883}
   - component: {fileID: 1218223884}
+  - component: {fileID: 1218223885}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1028,6 +1029,19 @@ MonoBehaviour:
   newUserPanel: {fileID: 7259169601267813588}
   textBoxPrefab: {fileID: 0}
   tmp_InputField: {fileID: 4323887562425132836}
+--- !u!114 &1218223885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1218223874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbef88971309d4e6db0eb48f044a8577, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  historyButton: {fileID: 0}
 --- !u!1 &1285208156
 GameObject:
   m_ObjectHideFlags: 0
@@ -3745,7 +3759,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66880ccc7e814a8eb2bd3f8e254770f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profileGalleryPanel: {fileID: 0}
+  profileGalleryPanel: {fileID: 474652469710832573}
   parentPanel: {fileID: 8032492981933778447}
 --- !u!1 &2530794332775318756
 GameObject:
