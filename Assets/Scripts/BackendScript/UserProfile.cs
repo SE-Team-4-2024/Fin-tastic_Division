@@ -66,7 +66,7 @@ public static class UserProfile
 {
     string queryParams = $"{azureFunctionAuthenticationParams}&deviceId={deviceID}";
     string url = $"{baseAzureFunctionUrl}?{queryParams}";
-    Debug.Log("Getting List of Users: " + url);
+    Debug.Log("Getting List of Users::::: " + url);
 
     using (UnityWebRequest www = UnityWebRequest.Get(url))
     {

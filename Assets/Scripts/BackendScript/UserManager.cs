@@ -41,7 +41,7 @@ public class UserManager : MonoBehaviour
     void Start()
     {
         Debug.Log("User Manager............");
-        FetchUsersSynchronously();
+        // FetchUsersSynchronously();
     }
 
     public bool MatchString(string input)
@@ -60,8 +60,24 @@ public class UserManager : MonoBehaviour
 
     public User[] FetchUsersSynchronously()
     {
-        string deviceId = SystemInfo.deviceUniqueIdentifier;
-        User[] fetchedUsers = UserProfile.GetUsersSync(deviceId); // Assuming there's a synchronous method for fetching users
+        Debug.Log("Getting List of userss");
+        // string deviceId = SystemInfo.deviceUniqueIdentifier;
+        string deviceId = "5D16B0D8-91B7-52E1-9A0B-2A5F635A0A35";
+        User[] fetchedUsers = new[]
+        {
+            new User
+            {
+                UserID = "5D16B0D8-91B7-52E1-9A0B-2A5F635A0A35_asdasdasd",
+                DeviceID = "5D16B0D8-91B7-52E1-9A0B-2A5F635A0A35",
+                Name = "asdasdasd",
+                IsSoundEnabled = true,
+                IsMusicEnabled = true,
+                Age = 9,
+                profilePicture = "1",
+                IsPrimaryUser = "true"
+            }
+        };
+        // User[] fetchedUsers = UserProfile.GetUsersSync(deviceId); // Assuming there's a synchronous method for fetching users
         if (fetchedUsers != null && fetchedUsers.Length >= 1)
         {
             User user = fetchedUsers[0];
@@ -209,6 +225,7 @@ public class UserManager : MonoBehaviour
 
     public Game[] FetchGameStatsData()
     {
+        Debug.Log("Fetch Game stats once.......");
         if(fetchedGames  != null && fetchedGames.Length >=1){ // If the data is already loaded
             historyButton.gameObject.SetActive(true);
             return fetchedGames;

@@ -41,16 +41,16 @@ public class NewUserCreationHandler : MonoBehaviour
         createButton.onClick.AddListener(OnCreateButtonClick);
 
 
-        if (LoadUsersData())
-        {
-            isSoundOn = true; // If the sound setting key is not found, set it to true (on) by default
-            isMusicOn = true;
-            PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
-            PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
-            PlayerPrefs.Save();
-            UpdateMusicButtonImage();
-            UpdateSoundButtonImage();
-        }
+        // if (LoadUsersData())
+        // {
+        //     isSoundOn = true; // If the sound setting key is not found, set it to true (on) by default
+        //     isMusicOn = true;
+        //     PlayerPrefs.SetInt(UserManager.SOUND_KEY, isSoundOn ? 1 : 0);
+        //     PlayerPrefs.SetInt(UserManager.MUSIC_KEY, isMusicOn ? 1 : 0);
+        //     PlayerPrefs.Save();
+        //     UpdateMusicButtonImage();
+        //     UpdateSoundButtonImage();
+        // }
 
         
     }
@@ -59,23 +59,24 @@ public class NewUserCreationHandler : MonoBehaviour
     private bool LoadUsersData()
     {
         // Loading the list of users to get the userID, name , sound settings
-        userManagerInstance = FindObjectOfType<UserManager>();
-        if (userManagerInstance != null)
-        {
-            // Call the GetUsers method
-            User[] users = userManagerInstance.GetUsers();
+        // userManagerInstance = FindObjectOfType<UserManager>();
+        // if (userManagerInstance != null)
+        // {
+        //     // Call the GetUsers method
+        //     User[] users = userManagerInstance.GetUsers();
 
-            Debug.Log("[New User]  Users Length" + users.Length);
+        //     Debug.Log("[New User]  Users Length" + users.Length);
 
-            if (users == null || users.Length <= 0)
-            {
-                // No user found, to need to enforce new user addition
-                Debug.Log("[Home Scene] No users found, so redirecting to user creation panel");
-                return true;
-            } 
+        //     if (users == null || users.Length <= 0)
+        //     {
+        //         // No user found, to need to enforce new user addition
+        //         Debug.Log("[Home Scene] No users found, so redirecting to user creation panel");
+        //         return true;
+        //     } 
 
-            return false;
-        }
+        //     return false;
+        // }
+        // return true;
         return true;
     }
 
