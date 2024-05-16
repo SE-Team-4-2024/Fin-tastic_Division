@@ -355,7 +355,7 @@ public class PlayScene : MonoBehaviour
         float verticalSpacing = 200f; // Increased vertical spacing
 
         // Define the offset from the top of the screen
-        float yOffset = 300f; // Adjust this value as needed
+        float yOffset = 220f; // Adjust this value as needed
 
         // Clear the existing denominator bar panels
         ClearDenominatorBarPanels();
